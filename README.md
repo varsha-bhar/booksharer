@@ -4,7 +4,7 @@ Chris Hunter, Kevin Chuang, Arkita Jain, Varsha Bharath
 ## Introduction
 Our group is going to create a social network site for sharing information about books with select audiences. Book data will be public but users will be able to set their own limits on who sees their reading lists, comments, or reviews. Users will be able to share books and tag others who might be interested in a specific book.
 
-## Project Description 
+## Project Description
 ### Who is our target audience?
 Our application is designed for book enthusiasts, particularly college students and young adults, who enjoy sharing their thoughts, opinions, and recommendations about what they read. Many people in this audience already engage with social platforms or group chats to discuss books informally, but there isn’t always a dedicated, safe space to connect with trusted peers over shared reading interests. Our app aims to fill that gap by allowing users to review books, preview details, and engage within a private network. We also envision our application appealing to small reading groups, classrooms, and book clubs that want to create private communities for discussions. These users value privacy, connection, and a space tailored specifically for book-related content rather than the noise of general social media.
 
@@ -60,42 +60,45 @@ Architectural Diagram
 
 
 
-## Data Schemas  
-- User  
-  - userId  
-  - username  
+## Data Schemas
+- User
+  - username
   - displayName
-  - readList [bookId]
-  - tagList [tagListEntry]
-  - friendLists [friendListOwnerId]
+  - readList [Books]
+  - tagList [TagEntry]
+  - friendLists [FriendList]
+
 - Book
-  - bookId
   - ISBN
   - title
-  - author
+  - authorFirstName
+  - authorMiddeName
+  - authorLastName
   - year
   - publisher
   - edition
-  - noteList [noteId]
-  - addedByUser
-- NoteListEntry
-  - noteId
-  - noteByUser
+  - noteList [NoteEntry]
+  - addedByUser ref: User
+
+- NoteEntry
+  - noteByUser ref: User
   - textBody
   - ratingLevel
-  - likes
-  - visibleTo [userId]
-- TagListEntry
-  - tagId
-  - taggedByUser
+  - likes [User]
+  - visibleTo [frindList]
+  - dateAdded
+
+- TagEntry
+  - taggedByUser ref: User
   - tagNoteText
+  - dateAdded
+
 - FriendList
-  - friendListOwnerId
-  - friendListId
+  - friendListOwnerId ref: User
   - friendListName
   - friendListDesc
   - listPrivacyInfo
-  - listMembers [userId]
+  - listMembers [User]
 
 
 
@@ -109,43 +112,43 @@ Architectural Diagram
 
 ## System Components
 
-Client:  
-- Browser-based interface (via React)  
-- Sends/receives data through REST API requests  
-- Handles login via OAuth redirect flow   
+Client:
+- Browser-based interface (via React)
+- Sends/receives data through REST API requests
+- Handles login via OAuth redirect flow
 
-Server:  
-- Node.js + Express backend that exposes /users, /books, /notes, and /friends endpoints  
-- Manages authentication, routing, and other logic  
-- Handles notifications using WebSockets for real-time updates (e.g., when someone tags you)  
+Server:
+- Node.js + Express backend that exposes /users, /books, /notes, and /friends endpoints
+- Manages authentication, routing, and other logic
+- Handles notifications using WebSockets for real-time updates (e.g., when someone tags you)
 
-Database:  
-- MongoDB stores:- users, books, notes, tags, friendLists  
-- Stores reading lists, book data, notes, tags, and user relationships  
+Database:
+- MongoDB stores:- users, books, notes, tags, friendLists
+- Stores reading lists, book data, notes, tags, and user relationships
 
 
-## Flow of Data  
+## Flow of Data
 
-1. User Registration/Login  
-- User signs up or logs in through OAuth 2.0 (/users/register, /users/login).  
-- Server validates and stores new user entry in users.  
+1. User Registration/Login
+- User signs up or logs in through OAuth 2.0 (/users/register, /users/login).
+- Server validates and stores new user entry in users.
 
-2. Book Search & Add  
-- Client sends GET /books to find or POST /books to add a new entry.  
-- Server queries or inserts to the books collection in MongoDB.  
+2. Book Search & Add
+- Client sends GET /books to find or POST /books to add a new entry.
+- Server queries or inserts to the books collection in MongoDB.
 
-3. Reading List / Notes / Tags  
-- POST /users/{username}/readlist updates user’s personal readList.  
-- POST /books/{bookid}/notes adds a noteList entry to that book.   
-- POST /users/{username}/taglist creates a tag and sends a real-time notification.  
+3. Reading List / Notes / Tags
+- POST /users/{username}/readlist updates user’s personal readList.
+- POST /books/{bookid}/notes adds a noteList entry to that book.
+- POST /users/{username}/taglist creates a tag and sends a real-time notification.
 
-4. Friend Lists  
-- POST /users/friends/{listname} creates private sharing groups.  
-- GET /users/friends/{listname} retrieves members for access control.  
+4. Friend Lists
+- POST /users/friends/{listname} creates private sharing groups.
+- GET /users/friends/{listname} retrieves members for access control.
 
 
 ## Communication Types
-Client ↔ Server: REST API over HTTPS (JSON)  
-Client ↔ Authentication Provider: OAuth 2.0  
-Server ↔ Database: MongoDB  
-Server → Client: Websocket  
+Client ↔ Server: REST API over HTTPS (JSON)
+Client ↔ Authentication Provider: OAuth 2.0
+Server ↔ Database: MongoDB
+Server → Client: Websocket
