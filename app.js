@@ -8,6 +8,9 @@ import usersRouter from './routes/users.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import reviewRoutes from "./routes/api/v1/reviews.js";
+import booksRoutes from "./routes/api/v1/books.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,6 +28,14 @@ app.use((req, res, next) => {
     next()
 });
 
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/books", booksRoutes);
+
+
 app.use('/users', usersRouter);
+
+app.listen(3000, () => {
+    console.log("Example app listening at http://localhost:3000")
+})
 
 export default app;
