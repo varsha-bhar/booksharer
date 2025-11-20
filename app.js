@@ -34,8 +34,4 @@ app.use("/api/v1/books", booksRoutes);
 
 app.use('/users', usersRouter);
 
-app.listen(3000, () => {
-    console.log("Example app listening at http://localhost:3000")
-})
-
 export default app;
