@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     tagList: [{type: mongoose.Schema.Types.ObjectId, ref:"TagEntry"}],
     friendLists: [{type: mongoose.Schema.Types.ObjectId, ref:"FriendList"}]
 });
-models.Item = mongoose.model("User", userSchema);
+models.User= mongoose.model("User", userSchema);
 
 
 const bookSchema = new mongoose.Schema({
@@ -29,7 +29,7 @@ const bookSchema = new mongoose.Schema({
     noteList: [{type: mongoose.Schema.Types.ObjectId, ref:"TagEntry"}],
     addedByUser: {type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
-models.Item = mongoose.model("Book", bookSchema);
+models.Book = mongoose.model("Book", bookSchema);
 
 
 const noteEntrySchema = new mongoose.Schema({
@@ -40,7 +40,7 @@ const noteEntrySchema = new mongoose.Schema({
     visibleTo: [{type: mongoose.Schema.Types.ObjectId, ref:"FriendList"}],
     dateAdded: Date
 });
-models.Item = mongoose.model("NoteEntry", noteEntrySchema);
+models.NoteEntry = mongoose.model("NoteEntry", noteEntrySchema);
 
 
 const tagEntrySchema = new mongoose.Schema({
@@ -48,7 +48,7 @@ const tagEntrySchema = new mongoose.Schema({
     tagNoteText: String,
     dateAdded: Date
 });
-models.Item = mongoose.model("TagEntry", tagEntrySchema);
+models.TagEntry = mongoose.model("TagEntry", tagEntrySchema);
 
 
 const friendListSchema = new mongoose.Schema({
@@ -58,7 +58,7 @@ const friendListSchema = new mongoose.Schema({
     listPrivacyInfo: String,
     listMembers: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
 });
-models.Item = mongoose.model("FriendList", friendListSchema);
+models.FriendList = mongoose.model("FriendList", friendListSchema);
 
 console.log('mongoose bookitems models created');
 
