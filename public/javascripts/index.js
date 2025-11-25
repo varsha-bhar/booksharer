@@ -13,12 +13,12 @@ async function login(){
 async function searchBooks(){
     let query = document.getElementById("book_search_input").value;
 
-    let response = await fetch("/api/v1/books?query=" + encodeURIComponent(query), {
+    let response = await fetch("/api/v1/books/search?query=" + encodeURIComponent(query), {
         method: "GET"
     });
 
     let text = await response.text();
-    document.getElementById("results").innerText = text;
+    document.getElementById("search_results").innerText = text;
 }
 
 
@@ -47,14 +47,14 @@ async function addBook(){
 
 // LOAD READING LIST
 async function loadReadingList(){
-    let username = "demoUser"; // PLACEHOLDER
+    let username = "testuser"; // PLACEHOLDER
 
     let response = await fetch(`/api/v1/users/${username}/readlist`, {
         method: "GET"
     });
 
     let text = await response.text();
-    document.getElementById("results").innerText = text;
+    document.getElementById("reading_list_div").innerText = text;
 }
 
 
@@ -87,20 +87,20 @@ async function loadNotes(){
     });
 
     let text = await response.text();
-    document.getElementById("results").innerText = text;
+    document.getElementById("notes_list_div").innerText = text;
 }
 
 
 // LOAD TAGGED BOOKS
 async function loadTaggedBooks(){
-    let username = "demoUser"; // PLACEHOLDER
+    let username = "testuser"; // PLACEHOLDER
 
     let response = await fetch(`/api/v1/users/${username}/taglist`, {
         method: "GET"
     });
 
     let text = await response.text();
-    document.getElementById("results").innerText = text;
+    document.getElementById("tagged_books_div").innerText = text;
 }
 
 
@@ -117,5 +117,5 @@ async function createFriendList(){
     });
 
     let text = await response.text();
-    document.getElementById("results").innerText = text;
+    document.getElementById("friend_lists_div").innerText = text;
 }
