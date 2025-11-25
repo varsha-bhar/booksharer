@@ -63,13 +63,14 @@ router.post("/", async (req, res) => {
         });
 
         // saves the new book so that users can review it
-
         await newBook.save();
 
         return res.status(200).json({
             status: "success",
             bookId: newBook._id
         });
+
+        //TODO: add the new book to the user's reading list
 
     } catch (error) {
         console.log(error);
