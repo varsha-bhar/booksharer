@@ -53,10 +53,11 @@ Architectural Diagram
 | `/books/{bookid}/notes` | POST | Add a note to a book |
 | `/books/{bookid}/notes` | GET | Retrieve all notes for a specific book |
 | `/reviews`| GET | Retrieve all notes
+| `/reviews/{reviewId}` | GET | Retrieve a specific note
 | `/reviews/search` | GET | Retrieve specific notes
 | `/users/{username}/readlist` | POST | Add a book to a user's reading list |
 | `/users/{username}/readlist` | GET | Retrieve a user's reading list |
-| `/users/{username}/readlist` | DELETE | Delete book(s) from a reading list |
+| `/users/{username}/readlist/{bookid}` | DELETE | Delete book(s) from a reading list |
 | `/users/{username}/taglist` | POST | Tag a book for another user |
 | `/users/{username}/taglist` | GET | Retrieve all tagged books for a user |
 | `/users/friends/{listname}` | POST | Create or update a friend list |
