@@ -8,6 +8,13 @@ router.get("/", async (req, res) => {
     res.status(200).json(allReviews);
 });
 
+// return a specific review
+router.get("/:noteId", async (req, res) => {
+    const review = await req.models.NoteEntry.findOne({ _id: req.params.noteId });
+    res.status(200).json(review);
+});
+
+
 // SEARCH THROUGH REVIEWS FUNCTIONALITY
 router.get("/search", async (req, res) => {
     try {
