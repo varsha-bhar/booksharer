@@ -8,6 +8,18 @@ router.get("/", async (req, res) => {
     res.status(200).json(books);
 });
 
+// return a specific book
+router.get("/:bookId", async (req, res) => {
+    const book = await req.models.Book.findById(req.params.bookId);
+    if (!book) {
+        return res.status(404).json({
+            status: "error",
+            error: "book not found"
+        });
+    }
+    res.status(200).json(book);
+});
+
 // ADD BOOK FUNCTIONAlITY
 router.post("/", async (req, res) => {
     try {
@@ -70,7 +82,7 @@ router.post("/", async (req, res) => {
 
 // return all reviews for one book
 router.get("/:bookId/notes", async (req, res) => {
-    const book = await req.models.Book.findById(req.params.bookId);
+    const book = await req.models.Book.findOne({ _id: req.params.bookId });
 
     if (!book) {
         return res.status(404).json({
@@ -78,6 +90,7 @@ router.get("/:bookId/notes", async (req, res) => {
             error: `bookId: ${req.params.bookId} not found`
         });
     }
+    console.log("book:" + book);
     res.status(200).json(book.noteList);
 });
 
