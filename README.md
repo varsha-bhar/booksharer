@@ -42,8 +42,8 @@ Architectural Diagram
 
 ## API Endpoints
 
-| |  | Endpoint | Method | Description |
-|--|---------|--------|-------------|
+| | Endpoint | Method | Description |
+|---|---------|--------|-------------|
 | |`/users/login` | POST | Authenticate user |
 | |`/users/register` | POST | Create a new account |
 |√|`/books` | GET | Search for books |
