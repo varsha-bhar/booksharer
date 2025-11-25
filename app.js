@@ -4,12 +4,12 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import models from './models.js'
-import usersRouter from './routes/users.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import reviewRoutes from "./routes/api/v1/reviews.js";
 import booksRoutes from "./routes/api/v1/books.js";
+import usersRouter from './routes/api/v1/users.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,8 +30,6 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/books", booksRoutes);
-
-
-app.use('/users', usersRouter);
+app.use('/api/v1/users', usersRouter);
 
 export default app;
