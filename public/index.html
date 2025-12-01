@@ -1,13 +1,167 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-  <title>Express</title>
+  <meta charset="UTF-8">
+  <title>BookShare</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/javascripts/index.js"> </script>
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
-</body>
 
+  <h1>BookShare</h1>
+  <p class="tagline">A private social space for sharing books with friends</p>
+
+  <hr>
+
+  <div id="results">Click a button to see the server response here.</div>
+
+  <hr>
+
+  <!-- Auth / Current User -->
+  <section id="auth_section">
+    <h2>Login</h2>
+    <p>
+      <button id="login_button" onclick="login()">Sign in</button>
+    </p>
+    <p id="current_user_display">
+      Not logged in
+    </p>
+  </section>
+
+  <hr>
+
+  <!-- SEARCH FOR BOOKS / ALL BOOKS -->
+  <section id="search_section">
+    <h2>Search Books</h2>
+    <label>
+      Title or author:
+      <input id="book_search_input" type="text" />
+    </label>
+    <button id="search_books_button" onclick="searchBooks()">Search</button>
+
+    <div id="search_results">
+      <!-- search results -->
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ADD BOOK TO DATABASE -->
+  <section id="add_book_section">
+    <h2>Add a Book to Library</h2>
+
+    <label>
+      Title:
+      <input id="add_book_title_input" type="text" />
+    </label>
+    <br>
+
+    <label>
+      Author (First):
+      <input id="add_book_authorFirstName_input" type="text" />
+    </label>
+    <br>
+
+    <label>
+      Author (Last):
+      <input id="add_book_authorLastName_input" type="text" />
+    </label>
+    <br>
+
+    <label>
+      Year:
+      <input id="add_book_year_input" type="number" />
+    </label>
+    <br>
+
+    <button id="add_book_button" onclick="addBook()">Add Book</button>
+
+    <div id="add_book_message"></div>
+  </section>
+
+  <hr>
+
+  <!-- USER'S PERSONAL READING LIST -->
+  <section id="reading_list_section">
+    <h2>My Reading List</h2>
+    <button id="load_reading_list_button" onclick="loadReadingList()">Load My Reading List</button>
+
+    <div id="reading_list_div">
+      <!-- user's reading list will appear -->
+      Log in and click "Load My Reading List" to see your books.
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- NOTES / REVIEWS SECTION -->
+  <section id="notes_section">
+    <h2>Leave a Review / Note</h2>
+
+    <label>
+      Book ID:
+      <input id="note_book_id_input" type="text" />
+    </label>
+    <br>
+
+    <label>
+      Your Review:
+      <textarea id="note_text_input" rows="3" cols="40"></textarea>
+    </label>
+    <br>
+
+    <label>
+      Rating (1–5):
+      <input id="note_rating_input" type="number" min="1" max="5" />
+    </label>
+    <br>
+
+    <button id="add_note_button" onclick="addNote()">Add Review</button>
+
+    <div id="note_message"></div>
+
+    <h3>Reviews for a Book</h3>
+    <label>
+      Book ID:
+      <input id="load_notes_book_id_input" type="text" />
+    </label>
+    <button id="load_notes_button" onclick="loadNotes()">Load Reviews</button>
+
+    <div id="notes_list_div">
+      <!-- notes for selected book -->
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- TAGS / NOTIFICATIONS -->
+  <section id="tags_section">
+    <h2>Tagged For You</h2>
+    <button id="load_tagged_books_button" onclick="loadTaggedBooks()">Load Tagged Books</button>
+
+    <div id="tagged_books_div">
+      <!-- tagged books / notifications here -->
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- USERS FRIEND LISTS -->
+  <section id="friends_section">
+    <h2>Friend Lists</h2>
+
+    <label>
+      New Friend List Name:
+      <input id="friend_list_name_input" type="text" />
+    </label>
+    <button id="create_friend_list_button" onclick="createFriendList()">Create / Update List</button>
+
+    <div id="friend_lists_div">
+      <!-- friend lists / members here -->
+    </div>
+  </section>
+
+</body>
 </html>

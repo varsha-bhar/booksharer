@@ -42,21 +42,28 @@ Architectural Diagram
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/users/login` | POST | Authenticate user |
-| `/users/register` | POST | Create a new account |
-| `/books` | GET | Search for books |
-| `/books` | POST | Add a new book to the global database |
-| `/users/{username}/readlist` | POST | Add a book to a user's reading list |
-| `/users/{username}/readlist` | GET | Retrieve a user's reading list |
-| `/users/{username}/readlist` | DELETE | Delete book(s) from a reading list |
-| `/books/{bookid}/notes` | POST | Add a note to a book |
-| `/books/{bookid}/notes` | GET | Retrieve all notes for a specific book |
-| `/users/{username}/taglist` | POST | Tag a book for another user |
-| `/users/{username}/taglist` | GET | Retrieve all tagged books for a user |
-| `/users/friends/{listname}` | POST | Create or update a friend list |
-| `/users/friends/{listname}` | GET | Retrieve members of a specific friend list |
+| | Endpoint | Method | Description |
+|---|---------|--------|-------------|
+| |`/users/login` | POST | Authenticate user |
+| |`/users/register` | POST | Create a new account |
+|√|`/books` | GET | Search for books |
+| |`/books/search` | GET | Search for specific books |
+|√|`/books` | POST | Add a new book to the global database |
+|√|`/books/{bookid}` | GET | Retrieve information for a specific book |
+|√|`/books/{bookid}/notes` | POST | Add a note to a book |
+|√|`/books/{bookid}/notes` | GET | Retrieve all notes for a specific book |
+|√|`/reviews`| GET | Retrieve all notes
+|√|`/reviews/{reviewId}` | GET | Retrieve a specific note
+| |`/reviews/search` | GET | Retrieve specific notes
+|√|`/users` | GET | Retrieve all users
+| |`/users/{username}` | GET | Retrieve a specific user
+| |`/users/{username}/readlist` | POST | Add a book to a user's reading list |
+|√|`/users/{username}/readlist` | GET | Retrieve a user's reading list |
+| |`/users/{username}/readlist/{bookid}` | DELETE | Delete book(s) from a reading list |
+| |`/users/{username}/taglist` | POST | Tag a book for another user |
+|√|`/users/{username}/taglist` | GET | Retrieve all tagged books for a user |
+| |`/users/friends/{listname}` | POST | Create or update a friend list |
+| |`/users/friends/{listname}` | GET | Retrieve members of a specific friend list |
 
 
 
