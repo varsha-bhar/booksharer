@@ -9,8 +9,11 @@
   "dependencies": {
     "cookie-parser": "^1.0.0",
     "debug": "~2.6.9",
+    "dotenv": "^17.2.3",
     "express": "^4.21.0",
+    "express-session": "^1.18.2",
     "mongoose": "^8.20.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "msal-node-wrapper": "file:./msal-node-wrapper"
   }
 }

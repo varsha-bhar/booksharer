@@ -4,7 +4,10 @@ import mongoose from 'mongoose'
 const models = {}
 
 console.log("connecting to mongodb");
-mongoose.connect("mongodb+srv://bookItemsUser:6aa6fe87152a88cec285c073f36842d6@cluster0.tit8bph.mongodb.net/bookItems?retryWrites=true&w=majority&appName=Cluster0");
+
+await mongoose.connect(
+  "mongodb+srv://bookItemsUser:6aa6fe87152a88cec285c073f36842d6@cluster0.tit8bph.mongodb.net/bookItems?retryWrites=true&w=majority&appName=Cluster0"
+);
 
 console.log("successfully connected to mongodb!");
 const userSchema = new mongoose.Schema({
@@ -26,7 +29,7 @@ const bookSchema = new mongoose.Schema({
     year: Number,
     publisher: String,
     edition: String,
-    noteList: [{type: mongoose.Schema.Types.ObjectId, ref:"TagEntry"}],
+    noteList: [{ type: mongoose.Schema.Types.ObjectId, ref: "NoteEntry" }],
     addedByUser: {type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
 models.Book = mongoose.model("Book", bookSchema);
