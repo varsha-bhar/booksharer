@@ -1,5 +1,4 @@
 async function init() {
-
   // Wire up live search on Enter key (optional, like urlInput handlers there)
   const searchInput = document.getElementById("book_search_input");
   if (searchInput) {
@@ -210,8 +209,13 @@ async function addBook() {
 
   msgEl.innerText = "";
 
-  if (!title || !authorName || !ISBN) {
-    msgEl.innerText = "Title, author name, and ISBN are required.";
+  if (!window.myIdentity) {
+    msgEl.innerText = "Please sign in to add a book.";
+    return;
+  }
+
+  if (!ISBN) {
+    msgEl.innerText = "ISBN is required.";
     return;
   }
 
@@ -240,7 +244,13 @@ async function addBook() {
     }
   } catch (err) {
     console.error("Error adding book:", err);
-    msgEl.innerText = "Error adding book.";
+    const msg = String(err.message || err);
+    if (msg.includes("Status: 401") || msg.includes('"not logged in"')) {
+      msgEl.innerText = "Please sign in to add a book.";
+    } 
+    else {
+      msgEl.innerText = "Error adding book.";
+    }
   }
 }
 
