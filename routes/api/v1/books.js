@@ -183,6 +183,7 @@ router.get("/:bookId/notes", async (req, res) => {
 // add a review to one book
 router.post("/:bookId/notes", async (req, res) => {
     try {
+        const { textBody, ratingLevel, taggedUsernames } = req.body;
 
         // if logged out
         if (!req.session?.isAuthenticated) {
@@ -193,14 +194,39 @@ router.post("/:bookId/notes", async (req, res) => {
         const username = account.username;   // e.g. your UW email
         const displayName = account.name || username;
 
+         // use findOne so we get a single user, not an array
+        const userObjt = await req.models.User.findOne({ username });
+        if (!userObjt) {
+          return res.status(400).json({
+            status: "error",
+            error: "Current user not found in User collection",
+          });
+        }
+
         //TEMP
         const currentUser = "testuser";
 
         // fetch the id for currentUser
         const userObj = await req.models.User.find({username: username});
 
-        // extract data from post body
-        const { textBody, ratingLevel } = req.body;
+         // normalize taggedUsernames 
+        let tagsArray = [];
+        if (Array.isArray(taggedUsernames)) {
+          tagsArray = taggedUsernames;
+        } else if (typeof taggedUsernames === "string") {
+          tagsArray = taggedUsernames
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0);
+        }
+
+         // look up users that were tagged
+        const taggedUsersDocs = await req.models.User.find({
+          username: { $in: tagsArray },
+        });
+
+        const taggedUserIds = taggedUsersDocs.map((u) => u._id);
+
 
         // create review:
         const createReview = new req.models.NoteEntry({
@@ -209,7 +235,10 @@ router.post("/:bookId/notes", async (req, res) => {
             ratingLevel,
             likes: [],
             visibleTo: [],
-            dateAdded: new Date()
+            dateAdded: new Date(), 
+            // new fields:
+            taggedUsers: taggedUserIds,
+            book: req.params.bookId,
         });
 
         // save review that was created
