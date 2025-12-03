@@ -205,9 +205,6 @@ router.post("/:bookId/notes", async (req, res) => {
           });
         }
 
-        //TEMP
-        const currentUser = "testuser";
-
         // fetch the id for currentUser
         const userObj = await req.models.User.find({username: username});
 
@@ -232,7 +229,7 @@ router.post("/:bookId/notes", async (req, res) => {
 
         // create review:
         const createReview = new req.models.NoteEntry({
-            noteByUser: userObj._id,    //TODO: this doesn't get added in the record
+            noteByUser: userObjt._id,
             textBody,
             ratingLevel,
             likes: [],

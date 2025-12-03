@@ -37,83 +37,89 @@ router.get("/", async (req, res) => {
   }
 });
 
+// looks like this never gets called. review adds go to /api/v1/books/:bookId/notes
 // ADD REVIEW- POST /api/v1/reviews
-router.post("/", async (req, res) => {
-  try {
-    // must be logged in (same pattern as comments.js)
-    if (!req.session?.isAuthenticated) {
-      return res.status(401).json({ status: "error", error: "not logged in" });
-    }
 
-    const { bookID, textBody, ratingLevel } = req.body || {};
-    const NoteEntry = req.models.NoteEntry;
-    const User = req.models.User;
-    const Book = req.models.Book;
+// router.post("/", async (req, res) => {
+//   try {
+//     // must be logged in (same pattern as comments.js)
+//     if (!req.session?.isAuthenticated) {
+//       return res.status(401).json({ status: "error", error: "not logged in" });
+//     }
 
-    // basic validation
-    if (!bookID) {
-      return res
-        .status(400)
-        .json({ status: "error", error: "missing bookID" });
-    }
+//     const { bookID, textBody, ratingLevel } = req.body || {};
+//     const NoteEntry = req.models.NoteEntry;
+//     const User = req.models.User;
+//     const Book = req.models.Book;
 
-    if (!textBody && (ratingLevel === null || ratingLevel === undefined)) {
-      return res.status(400).json({
-        status: "error",
-        error: "must provide textBody or ratingLevel",
-      });
-    }
+//     // basic validation
+//     if (!bookID) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", error: "missing bookID" });
+//     }
 
-    // look up the logged-in user from the session (msal-node-wrapper)
-    const username = req.session.account.username;
-    const displayName = req.session.account.name || username;
+//     if (!textBody && (ratingLevel === null || ratingLevel === undefined)) {
+//       return res.status(400).json({
+//         status: "error",
+//         error: "must provide textBody or ratingLevel",
+//       });
+//     }
 
-    // find or create the User document
-    let user = await User.findOne({ username });
-    if (!user) {
-      user = new User({
-        username,
-        displayName,
-        readList: [],
-        tagList: [],
-        friendLists: [],
-      });
-      await user.save();
-    }
+//     // look up the logged-in user from the session (msal-node-wrapper)
+//     const username = req.session.account.username;
+//     const displayName = req.session.account.name || username;
 
-    // create the review document
-    const newReview = new NoteEntry({
-      noteByUser: user._id,
-      textBody,
-      ratingLevel,
-      likes: [],
-      visibleTo: [],
-      dateAdded: new Date(),
-    });
+//     // find or create the User document
+//     let user = await User.findOne({ username });
+//     if (!user) {
+//       user = new User({
+//         username,
+//         displayName,
+//         readList: [],
+//         tagList: [],
+//         friendLists: [],
+//       });
+//       await user.save();
+//     }
 
-    await newReview.save();
+//     console.log("added by user: ", user);
 
-    // attach review to the book
-    const book = await Book.findById(bookID);
-    if (!book) {
-      return res
-        .status(404)
-        .json({ status: "error", error: "book not found" });
-    }
+//     // create the review document
+//     const newReview = new NoteEntry({
+//       noteByUser: user._id,
+//       textBody,
+//       ratingLevel,
+//       likes: [],
+//       visibleTo: [],
+//       dateAdded: new Date(),
+//     });
 
-    book.noteList.push(newReview._id);
-    await book.save();
+//     console.log("new review:" + newReview);
 
-    return res.json({ status: "success" });
-  }
-  catch (err) {
-    console.log("POST /api/v1/reviews error:", err);
-    return res.status(500).json({
-      status: "error",
-      error: err?.message ?? String(err),
-    });
-  }
-});
+//     await newReview.save();
+
+//     // attach review to the book
+//     const book = await Book.findById(bookID);
+//     if (!book) {
+//       return res
+//         .status(404)
+//         .json({ status: "error", error: "book not found" });
+//     }
+
+//     book.noteList.push(newReview._id);
+//     await book.save();
+
+//     return res.json({ status: "success" });
+//   }
+//   catch (err) {
+//     console.log("POST /api/v1/reviews error:", err);
+//     return res.status(500).json({
+//       status: "error",
+//       error: err?.message ?? String(err),
+//     });
+//   }
+// });
 
 // return a specific review
 router.get("/:reviewId", async (req, res) => {
