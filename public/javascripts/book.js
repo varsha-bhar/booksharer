@@ -42,7 +42,7 @@ async function loadBookDetails() {
       book.title || "(Untitled)";
 
     // Author
-    const author = '';
+    let author = '';
 
     if (book.authorFirstName && book.authorMiddleName && book.authorLastName) {
       author = [
