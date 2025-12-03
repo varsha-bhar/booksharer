@@ -256,4 +256,53 @@ router.post("/readingList", requireLogin, async (req, res) => {
   }
 });
 
+
+// ENDPOINTS FOR TAGGING 
+// books that have reviews where this user was tagged
+router.get("/myTaggedBooks", async (req, res) => {
+  try {
+    if (!req.session?.isAuthenticated) {
+      return res.status(401).json({ status: "error", error: "not logged in" });
+    }
+
+    const account = req.session.account;
+    const username = account.username;
+
+    const userObj = await req.models.User.findOne({ username });
+    if (!userObj) {
+      return res.status(400).json({
+        status: "error",
+        error: "User not found",
+      });
+    }
+
+    // find notes where the user exists in taggedUsers
+    const taggedNotes = await req.models.NoteEntry.find({
+      taggedUsers: userObj._id,
+    }).populate("book");
+
+    // extract unique books
+    const bookMap = new Map();
+    for (const note of taggedNotes) {
+      if (note.book && !bookMap.has(String(note.book._id))) {
+        bookMap.set(String(note.book._id), note.book);
+      }
+    }
+
+    const taggedBooks = Array.from(bookMap.values());
+
+    return res.json({
+      status: "success",
+      books: taggedBooks,
+    });
+  } catch (err) {
+    console.error("GET /api/v1/users/myTaggedBooks error:", err);
+    return res.status(500).json({
+      status: "error",
+      error: err.message ?? String(err),
+    });
+  }
+});
+
+
 export default router;
