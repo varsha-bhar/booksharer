@@ -23,6 +23,7 @@ async function initBookPage() {
   }
 
   loadBookDetails();
+  loadReviews();
 }
 
 // LOAD BOOK DETAILS | GET /api/v1/books/:bookId
