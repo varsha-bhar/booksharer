@@ -143,6 +143,7 @@ async function initProfilePage() {
     loadMyBooks();
     loadMyReviews();
     loadMyReadingList();
+    loadTaggedBooks();
 }
 
 /* -------------------- BOOKS I’VE POSTED -------------------- */
@@ -278,6 +279,63 @@ async function removeFromReadingList(bookId, btn) {
   } catch (err) {
     console.error("Error removing from reading list:", err);
     alert("Could not remove book from reading list.");
+  }
+}
+
+// LOAD TAGGED BOOKS 
+async function loadTaggedBooks() {
+  const container = document.getElementById("tagged_books_box");
+  container.innerHTML = "Loading tagged books...";
+
+  try {
+    const response = await fetch("/api/v1/users/myTaggedBooks");
+    const data = await response.json();
+
+    if (data.status !== "success") {
+      container.innerHTML =
+        `<div class="text-danger">Error loading tagged books: ${data.error || "unknown error"}</div>`;
+      return;
+    }
+
+    const books = data.books || [];
+    if (books.length === 0) {
+      container.innerHTML = `<div class="text-muted">No books have been tagged for you yet.</div>`;
+      return;
+    }
+
+    const list = document.createElement("ul");
+    list.className = "list-group";
+
+    for (const book of books) {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+
+      // adjust fields to match book schema
+      const title = book.title || "Untitled";
+      const author = [
+        book.authorFirstName,
+        book.authorMiddleName,
+        book.authorLastName,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      li.innerHTML = `
+        <div>
+          <strong><a href="/book.html?id=${book._id}">${title}</a></strong>
+          ${author ? `<div class="text-muted">${author}</div>` : ""}
+        </div>
+      `;
+
+      list.appendChild(li);
+    }
+
+    container.innerHTML = "";
+    container.appendChild(list);
+  } catch (err) {
+    console.error("Error loading tagged books", err);
+    container.innerHTML =
+      `<div class="text-danger">Error loading tagged books.</div>`;
   }
 }
 
