@@ -33,6 +33,7 @@ router.post("/", async (req, res) => {
     const {
       ISBN,
       title,
+      authorName,
       authorFirstName,
       authorMiddleName,
       authorLastName,
@@ -79,6 +80,7 @@ router.post("/", async (req, res) => {
     const info = new Book({
       ISBN,
       title,
+      authorName,
       authorFirstName,
       authorMiddleName,
       authorLastName,
@@ -209,7 +211,7 @@ router.post("/:bookId/notes", async (req, res) => {
         // fetch the id for currentUser
         const userObj = await req.models.User.find({username: username});
 
-         // normalize taggedUsernames 
+         // normalize taggedUsernames
         let tagsArray = [];
         if (Array.isArray(taggedUsernames)) {
           tagsArray = taggedUsernames;
@@ -235,7 +237,7 @@ router.post("/:bookId/notes", async (req, res) => {
             ratingLevel,
             likes: [],
             visibleTo: [],
-            dateAdded: new Date(), 
+            dateAdded: new Date(),
             // new fields:
             taggedUsers: taggedUserIds,
             book: req.params.bookId,

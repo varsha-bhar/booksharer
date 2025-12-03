@@ -11,7 +11,7 @@ async function initBookPage() {
 
   if (queryId) {
     currentBookId = queryId;
-  } 
+  }
   else {
     const segments = window.location.pathname.split("/");
     currentBookId = segments.pop() || segments.pop(); // handle trailing slash
@@ -41,13 +41,19 @@ async function loadBookDetails() {
       book.title || "(Untitled)";
 
     // Author
-    const author = [
+    const author = '';
+
+    if (book.authorFirstName && book.authorMiddleName && book.authorLastName) {
+      author = [
       book.authorFirstName,
       book.authorMiddleName,
       book.authorLastName,
     ]
       .filter(Boolean)
       .join(" ");
+    } else if (book.authorName) {
+      author = book.authorName;
+    }
 
     document.getElementById("book_author").innerText = author
       ? `Author: ${author}`
@@ -60,7 +66,7 @@ async function loadBookDetails() {
     if (book.publisher) metaParts.push(`Publisher: ${book.publisher}`);
 
     document.getElementById("book_meta").innerText = metaParts.join(" • ");
-  } 
+  }
   catch (err) {
     console.log("Error loading book:", err);
     document.getElementById("book_title").innerText = "Error loading book details.";
@@ -130,7 +136,7 @@ async function loadReviews() {
       .join("\n");
 
     box.innerHTML = reviewsHtml;
-  } 
+  }
   catch (err) {
     console.log("Error loading reviews:", err);
     box.innerText = "Error loading reviews.";
@@ -142,14 +148,14 @@ async function addReview() {
   const textEl = document.getElementById("new_review_text");
   const ratingEl = document.getElementById("new_review_rating");
   const msgEl = document.getElementById("add_review_message");
-  // for tagging feature specifically 
+  // for tagging feature specifically
   const tagsEl = document.getElementById("new_review_tags");
 
 
   const textBody = textEl.value.trim();
   const ratingValue = ratingEl.value;
-  // CSV style usernames for tagging 
-  const tagsInput = tagsEl ? tagsEl.value : ""; 
+  // CSV style usernames for tagging
+  const tagsInput = tagsEl ? tagsEl.value : "";
   msgEl.innerText = "";
 
   if (!textBody && !ratingValue) {
@@ -158,16 +164,16 @@ async function addReview() {
   }
 
   try {
-    const resp = await fetch(`/api/v1/books/${currentBookId}/notes`, { 
+    const resp = await fetch(`/api/v1/books/${currentBookId}/notes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         textBody,
-        taggedUsernames: tagsInput, 
+        taggedUsernames: tagsInput,
         ratingLevel: ratingValue ? Number(ratingValue) : null,
       })
     });
-  
+
 
   // try {
   //   const resp = await fetch("/api/v1/reviews", {
@@ -195,7 +201,7 @@ async function addReview() {
 
 
     loadReviews();
-  } 
+  }
   catch (err) {
     console.log("Error adding review:", err);
     msgEl.innerText = "Error adding review.";

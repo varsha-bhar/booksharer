@@ -23,6 +23,7 @@ models.User= mongoose.model("User", userSchema);
 const bookSchema = new mongoose.Schema({
     ISBN: String,
     title: String,
+    authorName: String,
     authorFirstName: String,
     authorMiddleName: String,
     authorLastName: String,
@@ -42,7 +43,7 @@ const noteEntrySchema = new mongoose.Schema({
     likes: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
     visibleTo: [{type: mongoose.Schema.Types.ObjectId, ref:"FriendList"}],
     dateAdded: Date,
-    // FOR TAGGING FEATURE 
+    // FOR TAGGING FEATURE
     book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
     taggedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
