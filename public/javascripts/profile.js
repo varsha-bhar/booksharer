@@ -144,6 +144,7 @@ async function initProfilePage() {
     loadMyReviews();
     loadMyReadingList();
     loadTaggedBooks();
+    loadFriendLists();
 }
 
 /* -------------------- BOOKS I’VE POSTED -------------------- */

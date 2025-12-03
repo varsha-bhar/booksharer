@@ -1,4 +1,3 @@
-
 const escapeHTML = str => !str ? str : str.replace(/[&<>'"]/g, 
     tag => ({
         '&': '&amp;',
@@ -27,8 +26,9 @@ async function fetchJSON(route, options){
     try{
         responseJson = await response.json();
     }catch(error){
+        let responseText;
         try{
-            let responseText = await response.text();
+            responseText = await response.text();
         }catch(getTextError){
             displayError()
             throw new Error(
@@ -42,7 +42,7 @@ async function fetchJSON(route, options){
             `Error fetching ${route} with options: ${options ? JSON.stringify(options) : options}
             Status: ${response.status}
             Response wasn't json: ${responseText ? JSON.stringify(responseText) : responseText}
-            error: ${getTextError}`)
+            error: ${error}`) // FIXED: was getTextError, should be error
     }
     if(response.status < 200 || response.status >= 300 || responseJson.status == "error"){
         displayError()
