@@ -101,6 +101,46 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+
+
+
+// SEARCH BOOKS - GET /api/v1/books/search?keyword=x
+router.get("/search", async (req, res) => {
+  try {
+    const { keyword } = req.query;
+
+    if (!keyword) {
+      return res.json({ status: "success", results: [] });
+    }
+
+    const lowerKey = keyword.toLowerCase();
+
+    const allBooks = await req.models.Book.find({})
+      .populate("addedByUser", "username displayName");
+
+    const results = allBooks.filter((book) => {
+      if (book.title?.toLowerCase().includes(lowerKey)) return true;
+      if (book.authorName?.toLowerCase().includes(lowerKey)) return true;
+      if (book.ISBN?.toLowerCase().includes(lowerKey)) return true;
+      if (book.publisher?.toLowerCase().includes(lowerKey)) return true;
+      return false;
+    });
+
+    return res.json({
+      status: "success",
+      results,
+    });
+
+  }
+  catch (error) {
+    console.log("Search error:", error);
+    return res.status(500).json({
+      status: "error",
+      error,
+    });
+  }
+});
 // GET SINGLE BOOK - GET /api/v1/books/:bookId
 router.get("/:bookId", async (req, res) => {
   try {
