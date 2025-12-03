@@ -41,7 +41,10 @@ const noteEntrySchema = new mongoose.Schema({
     ratingLevel: Number,
     likes: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
     visibleTo: [{type: mongoose.Schema.Types.ObjectId, ref:"FriendList"}],
-    dateAdded: Date
+    dateAdded: Date,
+    // FOR TAGGING FEATURE 
+    book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
+    taggedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 models.NoteEntry = mongoose.model("NoteEntry", noteEntrySchema);
 
