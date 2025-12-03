@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import reviewRoutes from "./routes/api/v1/reviews.js";
 import booksRoutes from "./routes/api/v1/books.js";
 import usersRouter from './routes/api/v1/users.js';
+import friendsRoutes from "./routes/api/v1/friends.js";
 
 dotenv.config();
 const authConfig = {
@@ -67,9 +68,13 @@ app.use((req, res, next) => {
     next();
 });
 
+
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/books", booksRoutes);
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/friends", friendsRoutes);
+
+
 
 app.get("/signin", (req, res, next) => {
   return req.authContext.login({
