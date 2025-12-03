@@ -142,9 +142,14 @@ async function addReview() {
   const textEl = document.getElementById("new_review_text");
   const ratingEl = document.getElementById("new_review_rating");
   const msgEl = document.getElementById("add_review_message");
+  // for tagging feature specifically 
+  const tagsEl = document.getElementById("new_review_tags");
+
 
   const textBody = textEl.value.trim();
   const ratingValue = ratingEl.value;
+  // CSV style usernames for tagging 
+  const tagsInput = tagsEl ? tagsEl.value : ""; 
   msgEl.innerText = "";
 
   if (!textBody && !ratingValue) {
@@ -153,15 +158,28 @@ async function addReview() {
   }
 
   try {
-    const resp = await fetch("/api/v1/reviews", {
+    const resp = await fetch(`/api/v1/books/${currentBookId}/notes`, { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        bookID: currentBookId,
         textBody,
+        taggedUsernames: tagsInput, 
         ratingLevel: ratingValue ? Number(ratingValue) : null,
-      }),
+      })
     });
+  
+
+  // try {
+  //   const resp = await fetch("/api/v1/reviews", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       bookID: currentBookId,
+  //       textBody,
+  //       taggedUsernames: tagsInput,
+  //       ratingLevel: ratingValue ? Number(ratingValue) : null,
+  //     }),
+  //   });
 
     const data = await resp.json().catch(() => ({}));
 
@@ -170,9 +188,11 @@ async function addReview() {
       return;
     }
 
-    msgEl.innerText = "✅ Review added.";
+    msgEl.innerText = "Review added.";
     textEl.value = "";
     ratingEl.value = "";
+    if (tagsEl) tagsEl.value = "";
+
 
     loadReviews();
   } 
