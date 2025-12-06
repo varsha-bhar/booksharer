@@ -37,7 +37,14 @@ button {
   cursor: pointer;
 }
 
-#search_results,
+#search_results {
+  margin-top: 10px;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;   /* allow wrapping to next line */
+  gap: 12px;         /* space between cards */
+}
+
 #reading_list_div,
 #notes_list_div,
 #tagged_books_div,
@@ -47,4 +54,91 @@ button {
   background-color: #fff;
   border: 1px solid #ddd;
   padding: 10px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  flex: 1 1 calc(20% - 12px); /* keep the 4–5 per row behavior */
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.card-title {
+  margin: 0 0 4px;
+  font-weight: bold;
+}
+
+.card-text {
+  margin: 2px 0;
+}
+
+.card-text.text-muted {
+  color: #777;
+  font-size: 13px;
+}
+
+.book-cover {
+  width: 70px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.card-body {
+  flex: 1;
+}
+
+#book_detail_box {
+  margin-top: 10px;
+  max-width: 600px;
+}
+
+#reviews_box {
+  margin-top: 10px;
+  max-width: 600px;
+}
+
+.review-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 6px;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+.book-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.book-card-link:hover {
+  background-color: #f8f8f8;
+}
+
+#reviews_box {
+  margin-top: 10px;
+  max-width: 600px;
+}
+
+.review-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 6px;
+  background-color: #fff;
+  font-size: 14px;
 }

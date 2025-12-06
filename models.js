@@ -4,7 +4,10 @@ import mongoose from 'mongoose'
 const models = {}
 
 console.log("connecting to mongodb");
-mongoose.connect("mongodb+srv://bookItemsUser:6aa6fe87152a88cec285c073f36842d6@cluster0.tit8bph.mongodb.net/bookItems?retryWrites=true&w=majority&appName=Cluster0");
+
+await mongoose.connect(
+  "mongodb+srv://bookItemsUser:6aa6fe87152a88cec285c073f36842d6@cluster0.tit8bph.mongodb.net/bookItems?retryWrites=true&w=majority&appName=Cluster0"
+);
 
 console.log("successfully connected to mongodb!");
 const userSchema = new mongoose.Schema({
@@ -20,13 +23,14 @@ models.User= mongoose.model("User", userSchema);
 const bookSchema = new mongoose.Schema({
     ISBN: String,
     title: String,
+    authorName: String,
     authorFirstName: String,
     authorMiddleName: String,
     authorLastName: String,
     year: Number,
     publisher: String,
     edition: String,
-    noteList: [{type: mongoose.Schema.Types.ObjectId, ref:"TagEntry"}],
+    noteList: [{ type: mongoose.Schema.Types.ObjectId, ref: "NoteEntry" }],
     addedByUser: {type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
 models.Book = mongoose.model("Book", bookSchema);
@@ -38,7 +42,10 @@ const noteEntrySchema = new mongoose.Schema({
     ratingLevel: Number,
     likes: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
     visibleTo: [{type: mongoose.Schema.Types.ObjectId, ref:"FriendList"}],
-    dateAdded: Date
+    dateAdded: Date,
+    // FOR TAGGING FEATURE
+    book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
+    taggedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 models.NoteEntry = mongoose.model("NoteEntry", noteEntrySchema);
 

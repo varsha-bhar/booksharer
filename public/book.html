@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Book Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="/javascripts/utils.js"></script>
+    <script src="/javascripts/identity.js"></script>
+    <script src="/javascripts/book.js"></script>
+  </head>
+
+  <body onload="initBookPage()">
+
+    <nav class="navbar navbar-light bg-light px-3">
+    <div
+      id="errorInfo"
+      class="alert alert-danger fade show mb-0"
+      role="alert"
+      style="opacity:0"
+    ></div>
+
+    <!-- navigation links -->
+    <div>
+      <a href="/">BookShare</a> |
+      <a href="/profile.html">My Profile</a>
+    </div>
+
+    <!-- login / logout / current user -->
+    <div id="identity_div">loading.</div>
+  </nav>
+
+    <h1>Book Details</h1>
+
+    <div id="book_detail_box">
+      <h2 id="book_title">Loading...</h2>
+      <p id="book_author"></p>
+      <p id="book_meta"></p>
+    </div>
+
+    <div class="mt-3">
+    <button
+      id="book_add_to_list_button"
+      class="btn btn-outline-secondary btn-sm"
+      onclick="addCurrentBookToList()"
+    >
+      Add to my reading list
+    </button>
+    <span id="book_add_message" class="ms-2 text-muted"></span>
+  </div>
+
+    <hr />
+
+    <section id="reviews_section">
+      <h2>Reviews</h2>
+
+      <!-- Load existing reviews -->
+      <button id="load_reviews_button" onclick="loadReviews()">
+        Load Reviews
+      </button>
+
+      <div id="reviews_box">
+        <!-- reviews will be rendered here -->
+      </div>
+
+      <hr />
+
+      <!-- Add a new review -->
+      <h3>Add a Review</h3>
+
+      <label>
+        Review:
+        <br />
+        <textarea id="new_review_text" rows="3" cols="40"></textarea>
+      </label>
+      <br />
+
+      <label>
+        Rating (1–5):
+        <input id="new_review_rating" type="number" min="1" max="5" />
+      </label>
+      <br />
+
+      <!-- tag your friends  -->
+
+      <label>
+        Tag friends to read this book (comma-separated usernames or emails):
+        <br />
+        <input
+          id="new_review_tags"
+          type="text"
+          size="40"
+          placeholder="e.g. friend1@uw.edu, friend2@uw.edu"
+        />
+      </label>
+      <br />
+
+      <button onclick="addReview()">Submit Review</button>
+      <div id="add_review_message"></div>
+    </section>
+  </body>
+</html>

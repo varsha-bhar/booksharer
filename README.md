@@ -1,6 +1,10 @@
 # Info 441 Final Project - Group 6
 Chris Hunter, Kevin Chuang, Arkita Jain, Varsha Bharath
 
+## Running the code
+Client secrets are setup for Azure auth in a `.env` file in the root of the project. We have provided an `EXAMPLE.env` file to show what secrets to add to enable the project
+to run on a local installation. (standard values from Azure auth class exercises should work here, if running at http://localhost:3000)
+
 ## Introduction
 Our group is going to create a social network site for sharing information about books with select audiences. Book data will be public but users will be able to set their own limits on who sees their reading lists, comments, or reviews. Users will be able to share books and tag others who might be interested in a specific book.
 
@@ -28,42 +32,42 @@ Architectural Diagram
 
 | Priority | User | Description | Technical Implementation |
 |----------|------|-------------|--------------------------|
-| P0 | As a new user | I want to be able to register for an account on the tool, in order to catalog and share books I like with others | New users can sign up for an account via a web form. Authentication will use an existing **OAuth** mechanism. |
-| P0 | As a user | I want to be able to search for books | Books will be in a **MongoDB database**. Users can search using the **GET /books** endpoint. |
-| P0 | As a user | I want to add books | If a book doesn't have an entry, it can be created using **POST /books** endpoint to add to the global database. |
-| P1 | As a user | I want to be able to search for books | Users can search for a book title and add it to their collection using **GET /books** with query parameters. |
-| P1 | As a user | I want to be able to add books I've read to my profile, in order to share my reading list with other people I know | Each user's reading list will be stored as a separate collection in **MongoDB**, associated with their account object. Uses **POST /users/{username}/readlist**. |
-| P1 | As a user | I want to be able to delete a review/book | Users can delete previously made reviews on books using **DELETE /users/{username}/readlist** endpoint. |
-| P1 | As a user | I want to be able to filter who my reviews are visible to | Permissions can be set on notes using the **friend list** feature. Notes will have a visibility field stored in **MongoDB** that filters who they are visible to. |
+| P0 | As a new user | I want to be able to register for an account on the tool, in order to catalog and share books I like with others | New users can authenticate via Azure and will have an account automatically created for them |
+| P0 | As a user | I want to be able to search for books | Books will be in a **MongoDB database**. Users can search using the **GET /books/search** with a query parameter. |
+| P0 | As a user | I want to add books to the database| If a book doesn't have an entry, it can be created using **POST /books** endpoint to add to the global database, by using the ISBN number |
+| P1 | As a user | I want to be able to add books I've read to my profile, in order to share my reading list with other people I know | Each user's reading list will be stored as a separate collection in **MongoDB**, associated with their account object. Uses **POST /users/readinglist**. |
+| P1 | As a user | I want to be able to delete a book from my list | Users can delete previously made reviews on books using **DELETE /users/{username}/readingList/{bookid}** endpoint. |
 | P1 | As a user | I want to be able to leave reviews/comments for books I have read, in order to help others evaluate if a book is for them | Users can write notes for books through a web interface using **POST /books/{bookid}/notes**. Each review will be stored in **MongoDB** as an entry in a list tied to the book entry. |
 | P1 | As a user | I want to be able to tag a book for specific people I know, to help them find books they might like | Users can select members of their friends to 'tag' a book for using **POST /users/{username}/taglist**. |
-| P1 | As a user | I want to receive notifications | Tags will send a notification via **WebSocket** to those users that they have a book recommendation, which will be viewable from their dashboard. Notifications stored in **MongoDB**. |
 | P1 | As a user | I want books to be recommended to me | Recommended books will be stored as an additional object list in **MongoDB** associated with each user, accessible via **GET /users/{username}/taglist**. |
 
 ## API Endpoints
 
 | | Endpoint | Method | Description |
 |---|---------|--------|-------------|
-| |`/users/login` | POST | Authenticate user |
-| |`/users/register` | POST | Create a new account |
 |√|`/books` | GET | Search for books |
-| |`/books/search` | GET | Search for specific books |
+|√|`/books/search` | GET | Search for specific books |
 |√|`/books` | POST | Add a new book to the global database |
 |√|`/books/{bookid}` | GET | Retrieve information for a specific book |
 |√|`/books/{bookid}/notes` | POST | Add a note to a book |
 |√|`/books/{bookid}/notes` | GET | Retrieve all notes for a specific book |
 |√|`/reviews`| GET | Retrieve all notes
 |√|`/reviews/{reviewId}` | GET | Retrieve a specific note
-| |`/reviews/search` | GET | Retrieve specific notes
 |√|`/users` | GET | Retrieve all users
-| |`/users/{username}` | GET | Retrieve a specific user
-| |`/users/{username}/readlist` | POST | Add a book to a user's reading list |
-|√|`/users/{username}/readlist` | GET | Retrieve a user's reading list |
-| |`/users/{username}/readlist/{bookid}` | DELETE | Delete book(s) from a reading list |
-| |`/users/{username}/taglist` | POST | Tag a book for another user |
+|√|`/users/myIdentity` | GET | Retrieve identity for current user
+|√|`/users/myBooks` | GET | Retrieve books added by current user
+|√|`/users/myReviews` | GET | Retrieve reviews written by current user
+|√|`/users/readingList` | POST | Add a book to a current user's reading list |
+|√|`/users/myTaggedBooks` | GET | Retrieve current user's tagged books list |
+|√|`/users/{username}/readingList/{bookid}` | DELETE | Delete book(s) from a reading list |
+|√|`/users/{username}/taglist` | POST | Tag a book for another user |
 |√|`/users/{username}/taglist` | GET | Retrieve all tagged books for a user |
-| |`/users/friends/{listname}` | POST | Create or update a friend list |
-| |`/users/friends/{listname}` | GET | Retrieve members of a specific friend list |
+|√|`/friends/` | POST | Get all friends for current user |
+|√|`/friends/{listname}` | POST | Create or update a friend list |
+|√|`/friends/{listname}` | GET | Retrieve members of a specific friend list |
+|√|`/friends/{listname}` | DELETE | Remove a specific friend list |
+|√|`/friends/{listname}/members` | POST | add members to a specific friend list |
+|√|`/friends/{listname}/members/{userId}` | DELETE | remove a member from a specific friend list |
 
 
 
@@ -78,6 +82,7 @@ Architectural Diagram
 - Book
   - ISBN
   - title
+  - authorName
   - authorFirstName
   - authorMiddeName
   - authorLastName
