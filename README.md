@@ -1,6 +1,10 @@
 # Info 441 Final Project - Group 6
 Chris Hunter, Kevin Chuang, Arkita Jain, Varsha Bharath
 
+## Running the code
+Client secrets are setup for Azure auth in a `.env` file in the root of the project. We have provided an `EXAMPLE.env` file to show what secrets to add to enable the project
+to run on a local installation. (standard values from Azure auth class exercises should work here, if running at http://localhost:3000)
+
 ## Introduction
 Our group is going to create a social network site for sharing information about books with select audiences. Book data will be public but users will be able to set their own limits on who sees their reading lists, comments, or reviews. Users will be able to share books and tag others who might be interested in a specific book.
 
