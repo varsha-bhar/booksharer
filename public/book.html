@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Book Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <script src="/javascripts/utils.js"></script>
@@ -11,92 +15,120 @@
   </head>
 
   <body onload="initBookPage()">
+    <div class="page-shell">
+      <nav class="topbar">
+        <div class="topbar-inner">
+          <div class="brand-lockup">
+            <a href="/" class="brand-mark" aria-label="BookShare home">B</a>
+            <div class="brand-text">
+              <a href="/" class="brand-name">BookShare</a>
+              <span class="brand-subtitle">Detailed book pages and reader notes</span>
+            </div>
+          </div>
 
-    <nav class="navbar navbar-light bg-light px-3">
-    <div
-      id="errorInfo"
-      class="alert alert-danger fade show mb-0"
-      role="alert"
-      style="opacity:0"
-    ></div>
+          <div class="nav-links">
+            <a href="/" class="nav-link-pill">Discover</a>
+            <a href="/profile.html" class="nav-link-pill">My Profile</a>
+          </div>
 
-    <!-- navigation links -->
-    <div>
-      <a href="/">BookShare</a> |
-      <a href="/profile.html">My Profile</a>
+          <div id="identity_div">loading.</div>
+        </div>
+        <div
+          id="errorInfo"
+          class="alert alert-danger fade show mt-3"
+          role="alert"
+          style="opacity:0"
+        ></div>
+      </nav>
+
+      <main class="book-sections">
+        <section class="detail-card book-hero">
+          <div class="book-detail-layout">
+            <img
+              id="book_cover"
+              class="book-detail-cover"
+              src="/images/no-cover.png"
+              alt="Book cover"
+            />
+
+            <div class="section-stack">
+              <span class="badge-soft">Book Details</span>
+              <div id="book_detail_box">
+                <h1 id="book_title" class="section-title">Loading...</h1>
+                <p id="book_author" class="section-subtitle mt-3"></p>
+                <div id="book_meta" class="detail-meta"></div>
+              </div>
+
+              <div class="detail-actions">
+                <button
+                  id="book_add_to_list_button"
+                  class="btn btn-outline-secondary"
+                  onclick="addCurrentBookToList()"
+                >
+                  Add to my reading list
+                </button>
+                <span id="book_add_message" class="message-line"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="reviews_section" class="section-card">
+          <div class="section-head">
+            <div>
+              <span class="badge-soft">Community Notes</span>
+              <h2 class="section-title mt-3">Reviews</h2>
+            </div>
+            <button id="load_reviews_button" class="btn btn-outline-secondary" onclick="loadReviews()">
+              Refresh Reviews
+            </button>
+          </div>
+
+          <div id="reviews_box">
+            <!-- reviews will be rendered here -->
+          </div>
+        </section>
+
+        <section class="form-card">
+          <div class="section-head">
+            <div>
+              <span class="badge-soft">Add Your Review</span>
+              <h2 class="section-title mt-3">Share what you thought</h2>
+              <p class="section-subtitle">Leave a written review, a rating, and optionally tag friends who should read it next.</p>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="field-group">
+              <label class="field-label" for="new_review_text">Review</label>
+              <textarea id="new_review_text" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="field-group">
+                <label class="field-label" for="new_review_tags">Tag friends to read this book</label>
+                <input
+                  id="new_review_tags"
+                  type="text"
+                  placeholder="e.g. friend1@uw.edu, friend2@uw.edu"
+                />
+                <div class="field-help">Use comma-separated usernames or emails.</div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="new_review_rating">Rating (1–5)</label>
+                <input id="new_review_rating" type="number" min="1" max="5" />
+              </div>
+            </div>
+
+            <div class="section-actions">
+              <button class="btn btn-primary" onclick="addReview()">Submit Review</button>
+            </div>
+
+            <div id="add_review_message" class="message-line"></div>
+          </div>
+        </section>
+      </main>
     </div>
-
-    <!-- login / logout / current user -->
-    <div id="identity_div">loading.</div>
-  </nav>
-
-    <h1>Book Details</h1>
-
-    <div id="book_detail_box">
-      <h2 id="book_title">Loading...</h2>
-      <p id="book_author"></p>
-      <p id="book_meta"></p>
-    </div>
-
-    <div class="mt-3">
-    <button
-      id="book_add_to_list_button"
-      class="btn btn-outline-secondary btn-sm"
-      onclick="addCurrentBookToList()"
-    >
-      Add to my reading list
-    </button>
-    <span id="book_add_message" class="ms-2 text-muted"></span>
-  </div>
-
-    <hr />
-
-    <section id="reviews_section">
-      <h2>Reviews</h2>
-
-      <!-- Load existing reviews -->
-      <button id="load_reviews_button" onclick="loadReviews()">
-        Load Reviews
-      </button>
-
-      <div id="reviews_box">
-        <!-- reviews will be rendered here -->
-      </div>
-
-      <hr />
-
-      <!-- Add a new review -->
-      <h3>Add a Review</h3>
-
-      <label>
-        Review:
-        <br />
-        <textarea id="new_review_text" rows="3" cols="40"></textarea>
-      </label>
-      <br />
-
-      <label>
-        Rating (1–5):
-        <input id="new_review_rating" type="number" min="1" max="5" />
-      </label>
-      <br />
-
-      <!-- tag your friends  -->
-
-      <label>
-        Tag friends to read this book (comma-separated usernames or emails):
-        <br />
-        <input
-          id="new_review_tags"
-          type="text"
-          size="40"
-          placeholder="e.g. friend1@uw.edu, friend2@uw.edu"
-        />
-      </label>
-      <br />
-
-      <button onclick="addReview()">Submit Review</button>
-      <div id="add_review_message"></div>
-    </section>
   </body>
 </html>

@@ -36,6 +36,7 @@ async function loadBookDetails() {
     }
 
     const book = await resp.json();
+    const coverEl = document.getElementById("book_cover");
 
     // Title
     document.getElementById("book_title").innerText =
@@ -66,7 +67,17 @@ async function loadBookDetails() {
     if (book.ISBN) metaParts.push(`ISBN: ${book.ISBN}`);
     if (book.publisher) metaParts.push(`Publisher: ${book.publisher}`);
 
-    document.getElementById("book_meta").innerText = metaParts.join(" • ");
+    document.getElementById("book_meta").innerHTML = metaParts
+      .map((item) => `<span class="detail-meta-item">${escapeHTML(item)}</span>`)
+      .join("");
+
+    if (coverEl && book.ISBN) {
+      coverEl.src = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(book.ISBN)}-L.jpg`;
+      coverEl.alt = `Cover of ${book.title || "book"}`;
+      coverEl.onerror = function handleCoverError() {
+        this.src = "/images/no-cover.png";
+      };
+    }
   }
   catch (err) {
     console.log("Error loading book:", err);
@@ -77,7 +88,12 @@ async function loadBookDetails() {
 // LOAD REVIEWS | GET /api/v1/reviews?bookID=...
 async function loadReviews() {
   const box = document.getElementById("reviews_box");
-  box.innerHTML = "Loading reviews...";
+  box.innerHTML = `
+    <div class="empty-state">
+      <h3>Loading reviews</h3>
+      <p>Gathering notes from readers now.</p>
+    </div>
+  `;
 
   try {
     const resp = await fetch(
@@ -92,7 +108,12 @@ async function loadReviews() {
     const reviews = await resp.json();
 
     if (!Array.isArray(reviews) || reviews.length === 0) {
-      box.innerText = "No reviews yet.";
+      box.innerHTML = `
+        <div class="empty-state">
+          <h3>No reviews yet</h3>
+          <p>Be the first person to leave one for this book.</p>
+        </div>
+      `;
       return;
     }
 
@@ -129,9 +150,9 @@ async function loadReviews() {
         }
 
         return `
-          <div class="review-card">
-            ${parts.join(" • ")}
-          </div>
+          <article class="review-card">
+            <div class="review-inline">${parts.join(" • ")}</div>
+          </article>
         `;
       })
       .join("\n");
@@ -140,7 +161,12 @@ async function loadReviews() {
   }
   catch (err) {
     console.log("Error loading reviews:", err);
-    box.innerText = "Error loading reviews.";
+    box.innerHTML = `
+      <div class="empty-state">
+        <h3>Couldn’t load reviews</h3>
+        <p>Please refresh and try again.</p>
+      </div>
+    `;
   }
 }
 

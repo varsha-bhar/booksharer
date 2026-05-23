@@ -9,10 +9,15 @@ async function loadFriendLists() {
   
       if (!friendLists.length) {
         box.innerHTML = `
-          <p class="text-muted">You haven't created any friend lists yet.</p>
-          <button class="btn btn-primary" onclick="showCreateFriendListForm()">
-            Create Friend List
-          </button>
+          <div class="empty-state">
+            <h3>No friend lists yet</h3>
+            <p>Create your first group to organize who should see which recommendations.</p>
+            <div class="section-actions justify-content-center mt-3">
+              <button class="btn btn-primary" onclick="showCreateFriendListForm()">
+                Create Friend List
+              </button>
+            </div>
+          </div>
         `;
         return;
       }
@@ -31,12 +36,14 @@ async function loadFriendLists() {
               <h5 class="card-title">${escapeHTML(list.name)}</h5>
               <p class="card-text text-muted">${escapeHTML(list.description || 'No description')}</p>
               <p class="text-muted">Members: ${list.memberCount}</p>
-              <button class="btn btn-sm btn-outline-primary" onclick="viewFriendList('${escapeHTML(list.name)}')">
-                View Members
-              </button>
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteFriendList('${escapeHTML(list.name)}')">
-                Delete
-              </button>
+              <div class="book-actions mt-3">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewFriendList('${escapeHTML(list.name)}')">
+                  View Members
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteFriendList('${escapeHTML(list.name)}')">
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -48,10 +55,15 @@ async function loadFriendLists() {
     } catch (err) {
       console.error("Error loading friend lists:", err);
       box.innerHTML = `
-        <p class="text-danger">Error loading friend lists.</p>
-        <button class="btn btn-primary" onclick="showCreateFriendListForm()">
-          Create Friend List
-        </button>
+        <div class="empty-state">
+          <h3>Couldn’t load friend lists</h3>
+          <p>Please try again, or create a new list if you’re just getting started.</p>
+          <div class="section-actions justify-content-center mt-3">
+            <button class="btn btn-primary" onclick="showCreateFriendListForm()">
+              Create Friend List
+            </button>
+          </div>
+        </div>
       `;
     }
   }

@@ -28,25 +28,25 @@ function renderBookCard(book) {
     : "/images/no-cover.png";
 
   return `
-    <div class="book-card d-flex gap-3 align-items-start mb-3">
+    <article class="book-card book-card-compact">
       <img 
+        class="book-cover"
         src="${coverUrl}" 
         alt="Cover of ${escapeHTML(title)}"
-        style="width:100px; height:auto; border:1px solid #ccc;"
         onerror="this.src='/images/no-cover.png'"
       >
 
-      <div class="book-info">
+      <div class="book-card-body">
         <h3 class="book-title">
           ${escapeHTML(title)} ${yearHtml}
         </h3>
         ${authorHtml}
         ${isbnHtml}
-        <div class="mt-2">
+        <div class="book-actions">
           ${linkHtml}
         </div>
       </div>
-    </div>
+    </article>
   `;
 }
 
@@ -80,32 +80,29 @@ function renderReadingListCard(book) {
     : "/images/no-cover.png";
 
   return `
-    <div class="book-card d-flex gap-3 align-items-start mb-3">
+    <article class="book-card book-card-compact">
       <img 
+        class="book-cover"
         src="${coverUrl}" 
         alt="Cover of ${escapeHTML(title)}"
-        style="width:100px; height:auto; border:1px solid #ccc;"
         onerror="this.src='/images/no-cover.png'"
       >
 
-      <div class="book-info">
-        
+      <div class="book-card-body">
         <h3 class="book-title">
           ${escapeHTML(title)} ${yearHtml}
         </h3>
-        
         ${authorHtml}
         ${isbnHtml}
-       
-        <div class="mt-2">
+        <div class="book-actions">
           ${linkHtml}
+          <button class="btn btn-sm btn-outline-danger"
+            onclick="removeFromReadingList('${book._id}', this)">
+            Remove from list
+          </button>
         </div>
       </div>
-      <button class="btn btn-sm btn-outline-danger"
-        onclick="removeFromReadingList('${book._id}', this)">
-        Remove from list
-    </button>
-    </div>
+    </article>
   `;
 }
 
@@ -128,8 +125,10 @@ async function initProfilePage() {
         const main = document.querySelector("main");
         if (main) {
             main.innerHTML = `
-                <h1>My Profile</h1>
-                <p>Please sign in to view your profile.</p>
+                <section class="section-card">
+                  <h1 class="section-title">My Profile</h1>
+                  <p class="section-subtitle mt-3">Please sign in to view your profile.</p>
+                </section>
             `;
         }
         return;
@@ -158,7 +157,12 @@ async function loadMyBooks() {
     const books = data.books || [];
 
     if (!books.length) {
-      box.innerText = "You haven’t posted any books yet.";
+      box.innerHTML = `
+        <div class="empty-state">
+          <h3>No posted books yet</h3>
+          <p>Your shared titles will appear here.</p>
+        </div>
+      `;
       return;
     }
 
@@ -181,7 +185,12 @@ async function loadMyReviews() {
     const reviews = data.reviews || [];
 
     if (!reviews.length) {
-      box.innerText = "You haven’t written any reviews yet.";
+      box.innerHTML = `
+        <div class="empty-state">
+          <h3>No reviews yet</h3>
+          <p>Your written reviews will show up here once you post them.</p>
+        </div>
+      `;
       return;
     }
 
@@ -195,20 +204,22 @@ async function loadMyReviews() {
         const meta = [rating, date].filter(Boolean).join(" • ");
 
         return `
-            <article class="review-card mb-3">
+            <article class="review-card">
             <h4>${escapeHTML(r.bookTitle || "(Untitled)")}</h4>
 
-            <p>${escapeHTML(r.textBody || "")}</p>
+            <p class="review-body">${escapeHTML(r.textBody || "")}</p>
 
-            <div class="text-muted" style="font-size:.9em;">
+            <div class="review-meta">
                 Rating: ${r.ratingLevel ?? "N/A"} •
                 ${r.dateAdded ? new Date(r.dateAdded).toLocaleDateString() : ""}
             </div>
 
-            <button class="btn btn-sm btn-outline-danger"
-                    onclick="deleteReview('${r._id}', this)">
-                Delete Review
-            </button>
+            <div class="book-actions mt-3">
+              <button class="btn btn-sm btn-outline-danger"
+                      onclick="deleteReview('${r._id}', this)">
+                  Delete Review
+              </button>
+            </div>
             </article>
         `;
       })
@@ -250,7 +261,12 @@ async function loadMyReadingList() {
     const books = data.books || [];
 
     if (!books.length) {
-      box.innerText = "Your reading list is empty.";
+      box.innerHTML = `
+        <div class="empty-state">
+          <h3>Your reading list is empty</h3>
+          <p>Save books from the library to keep them handy here.</p>
+        </div>
+      `;
       return;
     }
 
@@ -286,7 +302,12 @@ async function removeFromReadingList(bookId, btn) {
 // LOAD TAGGED BOOKS 
 async function loadTaggedBooks() {
   const container = document.getElementById("tagged_books_box");
-  container.innerHTML = "Loading tagged books...";
+  container.innerHTML = `
+    <div class="empty-state">
+      <h3>Loading tagged books</h3>
+      <p>Checking recommendations that were shared with you.</p>
+    </div>
+  `;
 
   try {
     const response = await fetch("/api/v1/users/myTaggedBooks");
@@ -294,13 +315,18 @@ async function loadTaggedBooks() {
 
     if (data.status !== "success") {
       container.innerHTML =
-        `<div class="text-danger">Error loading tagged books: ${data.error || "unknown error"}</div>`;
+        `<div class="empty-state"><h3>Couldn’t load tagged books</h3><p>${escapeHTML(data.error || "Unknown error")}</p></div>`;
       return;
     }
 
     const books = data.books || [];
     if (books.length === 0) {
-      container.innerHTML = `<div class="text-muted">No books have been tagged for you yet.</div>`;
+      container.innerHTML = `
+        <div class="empty-state">
+          <h3>Nothing tagged yet</h3>
+          <p>Books your friends recommend directly to you will appear here.</p>
+        </div>
+      `;
       return;
     }
 
@@ -336,7 +362,6 @@ async function loadTaggedBooks() {
   } catch (err) {
     console.error("Error loading tagged books", err);
     container.innerHTML =
-      `<div class="text-danger">Error loading tagged books.</div>`;
+      `<div class="empty-state"><h3>Couldn’t load tagged books</h3><p>Please try again in a moment.</p></div>`;
   }
 }
-

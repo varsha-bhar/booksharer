@@ -25,7 +25,12 @@ async function searchBooks() {
     return;
   }
 
-  resultsDiv.innerText = "Loading...";
+  resultsDiv.innerHTML = `
+    <div class="empty-state">
+      <h3>Loading books</h3>
+      <p>Pulling the latest library results now.</p>
+    </div>
+  `;
 
   const inputEl = document.getElementById("book_search_input");
   const keyword = inputEl ? inputEl.value.trim() : "";
@@ -45,9 +50,12 @@ async function searchBooks() {
     }
 
     if (!Array.isArray(booksJson) || booksJson.length === 0) {
-      resultsDiv.innerText = keyword
-        ? "No books found for that search."
-        : "No books in the library yet.";
+      resultsDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>${keyword ? "No books matched that search" : "No books in the library yet"}</h3>
+          <p>${keyword ? "Try a different title or author." : "Add the first title to start the shared library."}</p>
+        </div>
+      `;
       return;
     }
 
@@ -88,24 +96,24 @@ async function searchBooks() {
             : `<a href="/profile.html">${escapeHTML(rawPostedBy)}</a>`;
 
         return `
-        <div class="book-card d-flex gap-3 align-items-start mb-3">
+        <article class="book-card">
             <img
+            class="book-cover"
             src="${coverUrl}"
             alt="Cover of ${escapeHTML(title)}"
-            style="width:100px; height:auto; border:1px solid #ccc;"
             onerror="this.src='/images/no-cover.png'"
             >
-            <div class="book-info">
+            <div class="book-card-body">
             <h3 class="book-title">
                 ${escapeHTML(title)} ${yearHtml}
             </h3>
             ${authorHtml}
             ${isbnHtml}
-            <div class="book-posted-by text-muted" style="font-size:0.9em;">
+            <div class="book-posted-by">
                 Posted by: ${postedByHtml}
             </div>
 
-            <div class="mt-2 d-flex flex-wrap gap-2">
+            <div class="book-actions">
                 ${linkHtml}
                 ${
                 book._id
@@ -116,7 +124,7 @@ async function searchBooks() {
                 }
             </div>
             </div>
-        </div>
+        </article>
         `;
     })
     .join("\n");
@@ -126,7 +134,12 @@ async function searchBooks() {
   }
   catch (error) {
     console.log("Error searching/loading books:", error);
-    resultsDiv.innerText = "Error searching books.";
+    resultsDiv.innerHTML = `
+      <div class="empty-state">
+        <h3>Couldn’t load books</h3>
+        <p>Please try your search again in a moment.</p>
+      </div>
+    `;
   }
 }
 
