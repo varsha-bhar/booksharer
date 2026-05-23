@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>My Profile – BookShare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -19,64 +23,115 @@
   </head>
 
   <body onload="initProfilePage()">
-    <nav class="navbar navbar-light bg-light px-3">
-      <div
-        id="errorInfo"
-        class="alert alert-danger fade show mb-0"
-        role="alert"
-        style="opacity:0"
-      ></div>
+    <div class="page-shell">
+      <nav class="topbar">
+        <div class="topbar-inner">
+          <div class="brand-lockup">
+            <a href="/" class="brand-mark" aria-label="BookShare home">B</a>
+            <div class="brand-text">
+              <a href="/" class="brand-name">BookShare</a>
+              <span class="brand-subtitle">Personal reading profiles and lists</span>
+            </div>
+          </div>
 
-      <div><a href="/">Return to BookShare</a></div>
+          <div class="nav-links">
+            <a href="/" class="nav-link-pill">Discover</a>
+            <a href="/profile.html" class="nav-link-pill active">My Profile</a>
+          </div>
 
-      <div id="identity_div">loading.</div>
-    </nav>
-
-    <main class="container my-4">
-      <header class="mb-4">
-        <h1>My Profile</h1>
-        <p class="text-muted" id="profile_username"></p>
-      </header>
-
-      <!-- BOOKS USER HAS POSTED -->
-      <section class="mb-5">
-        <h2>Books I’ve Posted</h2>
-        <div id="profile_books" class="mt-2">
-          Loading…
+          <div id="identity_div">loading.</div>
         </div>
-      </section>
+        <div
+          id="errorInfo"
+          class="alert alert-danger fade show mt-3"
+          role="alert"
+          style="opacity:0"
+        ></div>
+      </nav>
 
-      <!-- REVIEWS USER HAS POSTED -->
-      <section class="mb-5">
-        <h2>Reviews I’ve Written</h2>
-        <div id="profile_reviews" class="mt-2">
-          Loading…
-        </div>
-      </section>
+      <main>
+        <header class="hero profile-hero">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow">Your Reading Hub</span>
+              <h1 class="hero-title">Everything you’ve shared, reviewed, and saved.</h1>
+              <p id="profile_username" class="tagline"></p>
+            </div>
 
-      <!-- READING LIST -->
-      <section class="mb-5">
-        <h2>My Reading List</h2>
-        <div id="profile_reading_list" class="mt-2">
-          Loading…
-        </div>
-      </section>
+            <aside class="hero-panel">
+              <h2>Profile at a glance</h2>
+              <p>Keep track of the books you’ve posted, the reviews you’ve written, and the reading lists you manage with friends.</p>
+              <ul class="panel-list">
+                <li>Posted books stay easy to revisit.</li>
+                <li>Reviews and reading lists are grouped into one workspace.</li>
+                <li>Friend lists stay close at hand for sharing recommendations.</li>
+              </ul>
+            </aside>
+          </div>
+        </header>
 
-      <!-- TAGGED BOOKS – PLACEHOLDER -->
-      <section class="mb-5">
-        <h2>Tagged For Me</h2>
-        <div id="tagged_books_box" class="mt-2 text-muted">
-          Loading…
-        </div>
-      </section>
+        <div class="profile-sections">
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <span class="badge-soft">Posted Books</span>
+                <h2 class="section-title mt-3">Books I’ve Posted</h2>
+              </div>
+            </div>
+            <div id="profile_books">
+              Loading…
+            </div>
+          </section>
 
-      <!-- FRIEND LIST – PLACEHOLDER -->
-      <section class="mb-5">
-        <h2>My Friend Lists</h2>
-        <div id="profile_friends" class="mt-2 text-muted">
-          Friend list features coming soon.
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <span class="badge-soft">Reviews</span>
+                <h2 class="section-title mt-3">Reviews I’ve Written</h2>
+              </div>
+            </div>
+            <div id="profile_reviews">
+              Loading…
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <span class="badge-soft">Reading List</span>
+                <h2 class="section-title mt-3">My Reading List</h2>
+              </div>
+            </div>
+            <div id="profile_reading_list">
+              Loading…
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <span class="badge-soft">Tagged Books</span>
+                <h2 class="section-title mt-3">Tagged For Me</h2>
+              </div>
+            </div>
+            <div id="tagged_books_box" class="muted-copy">
+              Loading…
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <span class="badge-soft">Friend Lists</span>
+                <h2 class="section-title mt-3">My Friend Lists</h2>
+              </div>
+            </div>
+            <div id="profile_friends" class="muted-copy">
+              Friend list features coming soon.
+            </div>
+          </section>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
   </body>
 </html>
