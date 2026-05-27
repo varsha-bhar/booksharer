@@ -33,7 +33,9 @@
         </div>
 
         <div class="nav-links">
-          <a href="/" class="nav-link-pill active">Discover</a>
+          <a href="/" class="nav-link-pill active">Home</a>
+          <a href="/features.html" class="nav-link-pill">Features</a>
+          <a href="/all-books.html" class="nav-link-pill">Library</a>
           <a href="/groups.html" id="groups_nav_link" class="nav-link-pill nav-link-signed-in-only">Groups</a>
           <a href="/profile.html" class="nav-link-pill">My Profile</a>
         </div>
@@ -49,18 +51,40 @@
     </nav>
 
     <main class="homepage">
-      <section class="home-intro">
+      <section class="home-intro home-hero-grid">
         <div class="home-intro-main">
-          <span class="eyebrow">Book discovery for people you actually know</span>
-          <h1 class="home-title">Find books classmates and friends would really hand you.</h1>
+          <span class="eyebrow">For class groups, clubs, and friends</span>
+          <h1 class="home-title">Keep book recommendations in one place.</h1>
           <p class="home-lede">
-            BookShare keeps recommendations personal: browse what your circle is posting, search the shared library, and save books worth reading next.
+            BookShare gives your group a simple shared shelf. Add books, browse what other people have posted, save titles for later, and keep recommendations attached to the people who shared them.
           </p>
           <div class="hero-actions">
-            <a href="#search_section" class="btn btn-primary">Browse books</a>
-            <a href="#add_book_section" class="btn btn-outline-secondary">Add a title</a>
+            <a href="#search_section" class="btn btn-primary">Start browsing</a>
+            <a href="/all-books.html" class="btn btn-outline-secondary">Open full library</a>
           </div>
         </div>
+
+        <aside class="home-hero-panel">
+          <span class="badge-soft">Features</span>
+          <h2 class="sidebar-mini-title mt-3">What you can do in BookShare</h2>
+          <div class="home-feature-list mt-3">
+            <article class="home-feature-item">
+              <h3>Browse the shared library</h3>
+              <p>See what your group has already added and open book pages with reviews and notes.</p>
+            </article>
+            <article class="home-feature-item">
+              <h3>Track your own list</h3>
+              <p>Save books to your reading list so good recommendations do not disappear.</p>
+            </article>
+            <article class="home-feature-item">
+              <h3>Share to groups</h3>
+              <p>Send a book to the right club, class, or friend list instead of posting it everywhere.</p>
+            </article>
+          </div>
+          <div class="section-actions mt-4">
+            <a href="/features.html" class="btn btn-outline-secondary">View all features</a>
+          </div>
+        </aside>
       </section>
 
       <div class="content-grid homepage-grid">
@@ -68,10 +92,11 @@
           <section id="search_section" class="section-card search-card">
             <div class="section-head">
               <div>
-                <span class="badge-soft">Discover</span>
-                <h2 class="section-title mt-3">Discover books</h2>
-                <p class="section-subtitle">Look up a title or author, or browse a short preview of what people have added to BookShare.</p>
+                <span class="badge-soft">Library Preview</span>
+                <h2 class="section-title mt-3">Browse what your community is reading</h2>
+                <p class="section-subtitle">Search by title or author, or scroll through a short preview of the shared library.</p>
               </div>
+              <a href="/all-books.html" class="btn btn-outline-secondary">See full library</a>
             </div>
 
             <div class="search-bar homepage-search-bar">
@@ -96,85 +121,88 @@
             <div id="search_results_footer"></div>
           </section>
 
-          <section class="section-card add-book-card" id="add_book_section">
-            <div class="section-head">
-              <div>
-                <span class="badge-soft">Add to BookShare</span>
-                <h2 class="section-title mt-3">Share a book someone should read next</h2>
-                <p class="section-subtitle">Start with an ISBN and BookShare will fill in the details when it can.</p>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="add_book_ISBN_input">ISBN</label>
-              <input
-                id="add_book_ISBN_input"
-                type="text"
-                class="form-control"
-                placeholder="e.g. 9780141439518"
-                onchange="autofillFromISBN()"
-              />
-              <div class="field-help">
-                Useful for quickly adding books with accurate metadata.
-              </div>
-            </div>
-
-            <div class="field-grid mt-4">
-              <div class="field-group field-span-3">
-                <label class="field-label" for="add_book_title_input">Title</label>
-                <input
-                  id="add_book_title_input"
-                  type="text"
-                  class="form-control"
-                  readonly
-                />
-              </div>
-
-              <div class="field-group field-span-3">
-                <label class="field-label" for="add_book_authorName_input">Author</label>
-                <input
-                  id="add_book_authorName_input"
-                  type="text"
-                  class="form-control"
-                  readonly
-                />
+          <div class="home-support-grid">
+            <section class="section-card add-book-card" id="add_book_section">
+              <div class="section-head">
+                <div>
+                  <span class="badge-soft">Add to BookShare</span>
+                  <h2 class="section-title mt-3">Share a book someone should read next</h2>
+                  <p class="section-subtitle">Start with an ISBN and BookShare will fill in the details when it can.</p>
+                </div>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="add_book_year_input">Year</label>
+                <label class="field-label" for="add_book_ISBN_input">ISBN</label>
                 <input
-                  id="add_book_year_input"
-                  type="number"
+                  id="add_book_ISBN_input"
+                  type="text"
                   class="form-control"
-                  readonly
+                  placeholder="e.g. 9780141439518"
+                  onchange="autofillFromISBN()"
                 />
+                <div class="field-help">
+                  Useful for quickly adding books with accurate metadata.
+                </div>
               </div>
-            </div>
 
-            <input id="add_book_cover_url_input" type="hidden" />
-            <input id="add_book_google_id_input" type="hidden" />
+              <div class="field-grid mt-4">
+                <div class="field-group field-span-3">
+                  <label class="field-label" for="add_book_title_input">Title</label>
+                  <input
+                    id="add_book_title_input"
+                    type="text"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
 
-            <div class="section-actions mt-4">
-              <button
-                id="add_book_button"
-                class="btn btn-success"
-                onclick="addBook()"
-              >
-                Add Book
-              </button>
-            </div>
+                <div class="field-group field-span-3">
+                  <label class="field-label" for="add_book_authorName_input">Author</label>
+                  <input
+                    id="add_book_authorName_input"
+                    type="text"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
 
-            <div id="add_book_message" class="message-line mt-3"></div>
-          </section>
+                <div class="field-group">
+                  <label class="field-label" for="add_book_year_input">Year</label>
+                  <input
+                    id="add_book_year_input"
+                    type="number"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+              </div>
 
-          <section class="section-card profile-prompt-card">
-            <span class="badge-soft">Your Account</span>
-            <h3 class="sidebar-mini-title mt-3">Keep building your reading trail</h3>
-            <p class="section-subtitle mt-2">Visit your profile to see what you’ve posted, what you’ve reviewed, and what’s still sitting on your reading list.</p>
-            <div class="section-actions mt-4">
-              <a href="/profile.html" class="btn btn-outline-secondary">Open My Profile</a>
-            </div>
-          </section>
+              <input id="add_book_cover_url_input" type="hidden" />
+              <input id="add_book_google_id_input" type="hidden" />
+
+              <div class="section-actions mt-4">
+                <button
+                  id="add_book_button"
+                  class="btn btn-success"
+                  onclick="addBook()"
+                >
+                  Add Book
+                </button>
+              </div>
+
+              <div id="add_book_message" class="message-line mt-3"></div>
+            </section>
+
+            <section class="section-card profile-prompt-card">
+              <span class="badge-soft">Your Account</span>
+              <h3 class="sidebar-mini-title mt-3">Keep building your reading trail</h3>
+              <p class="section-subtitle mt-2">Visit your profile to see what you’ve posted, reviewed, and saved for later.</p>
+              <div class="home-quick-links mt-4">
+                <a href="/profile.html" class="btn btn-outline-secondary">Open My Profile</a>
+                <a href="/groups.html" class="btn btn-outline-secondary nav-link-signed-in-only">Open Groups</a>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
