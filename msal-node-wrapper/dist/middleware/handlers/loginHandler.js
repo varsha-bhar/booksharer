@@ -20,7 +20,7 @@ function loginHandler(options) {
         const authUrlParams = {
             state: this.getCryptoProvider().base64Encode(JSON.stringify(state)),
             redirectUri: UrlUtils.UrlUtils.ensureAbsoluteUrl(this.webAppAuthConfig.auth.redirectUri, req.protocol, req.get("host") || req.hostname),
-            responseMode: Constants.ResponseMode.FORM_POST,
+            responseMode: Constants.ResponseMode.QUERY,
             scopes: options.scopes || [],
             prompt: options.prompt || undefined,
             claims: options.claims || undefined,

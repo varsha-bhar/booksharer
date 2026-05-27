@@ -21,14 +21,13 @@ function renderBookCard(book) {
     : "";
 
   // same cover logic as main page
-  const coverUrl = book.ISBN
-    ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(
-        book.ISBN
-      )}-M.jpg`
-    : "/images/no-cover.png";
+  const coverUrl = getBookCoverUrl(book, "M");
 
   return `
-    <article class="book-card book-card-compact">
+    <article
+      class="book-card book-card-compact ${book._id ? "book-card-clickable" : ""}"
+      ${book._id ? `onclick="openBookDetails('${book._id}')" tabindex="0" role="link" onkeydown="handleBookCardKeydown(event, '${book._id}')"` : ""}
+    >
       <img 
         class="book-cover"
         src="${coverUrl}" 
@@ -43,7 +42,7 @@ function renderBookCard(book) {
         ${authorHtml}
         ${isbnHtml}
         <div class="book-actions">
-          ${linkHtml}
+          ${book._id ? `<a href="/book/${encodeURIComponent(book._id)}" onclick="event.stopPropagation()">View details &amp; reviews →</a>` : ""}
         </div>
       </div>
     </article>
@@ -73,14 +72,13 @@ function renderReadingListCard(book) {
     : "";
 
   // same cover logic as main page
-  const coverUrl = book.ISBN
-    ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(
-        book.ISBN
-      )}-M.jpg`
-    : "/images/no-cover.png";
+  const coverUrl = getBookCoverUrl(book, "M");
 
   return `
-    <article class="book-card book-card-compact">
+    <article
+      class="book-card book-card-compact ${book._id ? "book-card-clickable" : ""}"
+      ${book._id ? `onclick="openBookDetails('${book._id}')" tabindex="0" role="link" onkeydown="handleBookCardKeydown(event, '${book._id}')"` : ""}
+    >
       <img 
         class="book-cover"
         src="${coverUrl}" 
@@ -95,9 +93,9 @@ function renderReadingListCard(book) {
         ${authorHtml}
         ${isbnHtml}
         <div class="book-actions">
-          ${linkHtml}
+          ${book._id ? `<a href="/book/${encodeURIComponent(book._id)}" onclick="event.stopPropagation()">View details &amp; reviews →</a>` : ""}
           <button class="btn btn-sm btn-outline-danger"
-            onclick="removeFromReadingList('${book._id}', this)">
+            onclick="event.stopPropagation(); removeFromReadingList('${book._id}', this)">
             Remove from list
           </button>
         </div>
@@ -233,7 +231,13 @@ async function loadMyReviews() {
 }
 
 async function deleteReview(reviewId, btn) {
-  if (!confirm("Delete this review?")) return;
+  const confirmed = await confirmInPage({
+    title: "Delete review?",
+    message: "This will permanently remove your review from the book page.",
+    confirmLabel: "Delete review",
+    confirmClass: "btn btn-danger",
+  });
+  if (!confirmed) return;
 
   try {
     await fetchJSON(`/api/v1/reviews/${reviewId}`, {
@@ -245,7 +249,7 @@ async function deleteReview(reviewId, btn) {
   } 
   catch (err) {
     console.error("Error deleting review:", err);
-    alert("Could not delete review.");
+    showSiteNotice("Could not delete review.", { tone: "error" });
   }
 }
 
@@ -295,7 +299,7 @@ async function removeFromReadingList(bookId, btn) {
     }
   } catch (err) {
     console.error("Error removing from reading list:", err);
-    alert("Could not remove book from reading list.");
+    showSiteNotice("Could not remove book from reading list.", { tone: "error" });
   }
 }
 

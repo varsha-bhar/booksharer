@@ -25,7 +25,9 @@ function authenticateMiddleware(options) {
         }
         next();
     });
-    appRouter.post(UrlUtils.UrlUtils.getPathFromUrl(this.webAppAuthConfig.auth.redirectUri), redirectHandler.call(this));
+    const redirectPath = UrlUtils.UrlUtils.getPathFromUrl(this.webAppAuthConfig.auth.redirectUri);
+    appRouter.get(redirectPath, redirectHandler.call(this));
+    appRouter.post(redirectPath, redirectHandler.call(this));
     if (this.webAppAuthConfig.auth.frontChannelLogoutUri) {
         /**
          * Expose front-channel logout route. For more information, visit:

@@ -20,7 +20,7 @@
   <script src="/javascripts/index.js"></script>
 </head>
 
-<body>
+<body data-page="discover">
   <div class="page-shell">
     <nav class="topbar">
       <div class="topbar-inner">
@@ -34,6 +34,7 @@
 
         <div class="nav-links">
           <a href="/" class="nav-link-pill active">Discover</a>
+          <a href="/groups.html" id="groups_nav_link" class="nav-link-pill nav-link-signed-in-only">Groups</a>
           <a href="/profile.html" class="nav-link-pill">My Profile</a>
         </div>
 
@@ -60,110 +61,16 @@
             <a href="#add_book_section" class="btn btn-outline-secondary">Add a title</a>
           </div>
         </div>
-
-        <aside class="home-intro-side">
-          <div class="mini-review-card">
-            <div class="mini-review-cover mini-review-cover-a"></div>
-            <div class="mini-review-body">
-              <p class="mini-review-kicker">Trending with friends</p>
-              <h3>Pachinko</h3>
-              <p class="mini-review-meta">Min Jin Lee</p>
-              <p class="mini-review-text">“One of those books three different people recommended before I finally started it.”</p>
-              <div class="mini-review-footer">
-                <span class="rating-dots">★★★★★</span>
-                <span>posted by Maya C.</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="shelf-row">
-        <article class="shelf-card shelf-card-wide">
-          <div class="section-head shelf-head">
-            <div>
-              <span class="badge-soft">From Your Circle</span>
-              <h2 class="section-title mt-3">Recently loved</h2>
-            </div>
-            <a href="#search_section" class="shelf-link">Browse all books</a>
-          </div>
-
-          <div class="featured-book-grid">
-            <div class="featured-book">
-              <div class="featured-cover featured-cover-olive"></div>
-              <div class="featured-copy">
-                <h3>Tomorrow, and Tomorrow, and Tomorrow</h3>
-                <p class="featured-author">Gabrielle Zevin</p>
-                <p class="featured-note">“Feels like the kind of recommendation that gets passed from one roommate to another.”</p>
-                <div class="featured-meta">
-                  <span class="rating-dots">★★★★☆</span>
-                  <span>saved by Nora L.</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="featured-book">
-              <div class="featured-cover featured-cover-rust"></div>
-              <div class="featured-copy">
-                <h3>The Left Hand of Darkness</h3>
-                <p class="featured-author">Ursula K. Le Guin</p>
-                <p class="featured-note">“A strong seminar-style recommendation: thoughtful, strange, and easy to talk about after.”</p>
-                <div class="featured-meta">
-                  <span class="rating-dots">★★★★★</span>
-                  <span>recommended by Daniel P.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="shelf-card shelf-card-tall">
-          <div class="section-head shelf-head">
-            <div>
-              <span class="badge-soft">Review Snapshots</span>
-              <h2 class="section-title mt-3">Quick notes</h2>
-            </div>
-          </div>
-
-          <div class="review-snippet-list">
-            <div class="review-snippet">
-              <div class="review-snippet-top">
-                <strong>Emily Wilson’s Odyssey</strong>
-                <span class="rating-dots">★★★★☆</span>
-              </div>
-              <p>“Readable in a way that made me want to keep underlining lines.”</p>
-              <span class="review-snippet-user">from Asha M.</span>
-            </div>
-
-            <div class="review-snippet">
-              <div class="review-snippet-top">
-                <strong>Circe</strong>
-                <span class="rating-dots">★★★★★</span>
-              </div>
-              <p>“Perfect if you want something immersive without feeling heavy.”</p>
-              <span class="review-snippet-user">from Ben T.</span>
-            </div>
-
-            <div class="review-snippet">
-              <div class="review-snippet-top">
-                <strong>Never Let Me Go</strong>
-                <span class="rating-dots">★★★★☆</span>
-              </div>
-              <p>“Someone in class mentioned it once and now half my reading list is books like this.”</p>
-              <span class="review-snippet-user">from Priya R.</span>
-            </div>
-          </div>
-        </article>
       </section>
 
       <div class="content-grid homepage-grid">
-        <div class="stack">
+        <div class="stack homepage-main-stack">
           <section id="search_section" class="section-card search-card">
             <div class="section-head">
               <div>
                 <span class="badge-soft">Discover</span>
-                <h2 class="section-title mt-3">Search the shared library</h2>
-                <p class="section-subtitle">Look up a title or author, or leave the search blank to browse everything people have added.</p>
+                <h2 class="section-title mt-3">Discover books</h2>
+                <p class="section-subtitle">Look up a title or author, or browse a short preview of what people have added to BookShare.</p>
               </div>
             </div>
 
@@ -186,11 +93,10 @@
             <div id="search_results">
               <!-- search results go here -->
             </div>
+            <div id="search_results_footer"></div>
           </section>
-        </div>
 
-        <aside class="homepage-sidebar">
-          <section class="sidebar-card add-book-card" id="add_book_section">
+          <section class="section-card add-book-card" id="add_book_section">
             <div class="section-head">
               <div>
                 <span class="badge-soft">Add to BookShare</span>
@@ -245,6 +151,9 @@
               </div>
             </div>
 
+            <input id="add_book_cover_url_input" type="hidden" />
+            <input id="add_book_google_id_input" type="hidden" />
+
             <div class="section-actions mt-4">
               <button
                 id="add_book_button"
@@ -258,7 +167,7 @@
             <div id="add_book_message" class="message-line mt-3"></div>
           </section>
 
-          <section class="sidebar-card profile-prompt-card">
+          <section class="section-card profile-prompt-card">
             <span class="badge-soft">Your Account</span>
             <h3 class="sidebar-mini-title mt-3">Keep building your reading trail</h3>
             <p class="section-subtitle mt-2">Visit your profile to see what you’ve posted, what you’ve reviewed, and what’s still sitting on your reading list.</p>
@@ -266,7 +175,7 @@
               <a href="/profile.html" class="btn btn-outline-secondary">Open My Profile</a>
             </div>
           </section>
-        </aside>
+        </div>
       </div>
     </main>
   </div>

@@ -1,3 +1,107 @@
+const DISCOVER_PREVIEW_COUNT = 8;
+
+function getLibraryMode() {
+  return document.body?.dataset?.page === "library" ? "library" : "discover";
+}
+
+function openBookDetails(bookId) {
+  if (!bookId) {
+    return;
+  }
+
+  window.location.href = `/book/${encodeURIComponent(bookId)}`;
+}
+
+function handleBookCardKeydown(event, bookId) {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  event.preventDefault();
+  openBookDetails(bookId);
+}
+
+function renderBookCard(book) {
+  const title = book.title || "(Untitled)";
+
+  const author = book.authorName || "";
+  const authorHtml = author
+    ? `<div class="book-author">${escapeHTML(author)}</div>`
+    : `<div class="book-author text-muted">Author unknown</div>`;
+
+  const yearHtml = book.year
+    ? `<span class="book-year">(${escapeHTML(String(book.year))})</span>`
+    : "";
+
+  const isbnHtml = book.ISBN
+    ? `<div class="book-meta">ISBN: ${escapeHTML(book.ISBN)}</div>`
+    : "";
+
+  const linkHtml = book._id
+    ? `<a href="/book/${encodeURIComponent(book._id)}">View details &amp; reviews →</a>`
+    : "";
+
+  const coverUrl = getBookCoverUrl(book, "M");
+  const rawPostedBy = book.addedByUser?.username || "unknown";
+  const sourceHtml = book.source === "google"
+    ? `<div class="book-meta">From Google Books</div>`
+    : "";
+
+  const postedByHtml = rawPostedBy === "unknown"
+    ? "unknown"
+    : `<a href="/profile.html">${escapeHTML(rawPostedBy)}</a>`;
+
+  return `
+    <article
+      class="book-card ${book._id ? "book-card-clickable" : ""}"
+      ${book._id ? `onclick="openBookDetails('${book._id}')" tabindex="0" role="link" onkeydown="handleBookCardKeydown(event, '${book._id}')"` : ""}
+    >
+      <img
+        class="book-cover"
+        src="${coverUrl}"
+        alt="Cover of ${escapeHTML(title)}"
+        onerror="this.src='/images/no-cover.png'"
+      >
+      <div class="book-card-body">
+        <h3 class="book-title">
+          ${escapeHTML(title)} ${yearHtml}
+        </h3>
+        ${authorHtml}
+        ${isbnHtml}
+        ${sourceHtml}
+        <div class="book-posted-by">
+          Posted by: ${postedByHtml}
+        </div>
+
+        <div class="book-actions">
+          ${book._id ? `<a href="/book/${encodeURIComponent(book._id)}" onclick="event.stopPropagation()">View details &amp; reviews →</a>` : ""}
+          ${
+            book._id
+              ? `<button class="btn btn-outline-secondary btn-sm" onclick="event.stopPropagation(); addToReadingList('${book._id}', this)">
+                  Add to my list
+                </button>`
+              : ""
+          }
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderLoadMoreLink(totalBooks, shownBooks) {
+  if (getLibraryMode() !== "discover" || totalBooks <= shownBooks) {
+    return "";
+  }
+
+  return `
+    <div class="load-more-row">
+      <a href="/all-books.html" class="btn btn-outline-secondary">
+        Load more books
+      </a>
+    </div>
+  `;
+}
+
 async function init() {
   // Wire up live search on Enter key (optional, like urlInput handlers there)
   const searchInput = document.getElementById("book_search_input");
@@ -14,15 +118,19 @@ async function init() {
     await loadIdentity();
   }
 
-  // On first load, show all books (same idea as loadPosts())
   searchBooks();
 }
 
 async function searchBooks() {
   const resultsDiv = document.getElementById("search_results")
                      || document.getElementById("results");
+  const footerDiv = document.getElementById("search_results_footer");
   if (!resultsDiv) {
     return;
+  }
+
+  if (footerDiv) {
+    footerDiv.innerHTML = "";
   }
 
   resultsDiv.innerHTML = `
@@ -37,20 +145,29 @@ async function searchBooks() {
 
   try {
     let booksJson;
+    let externalWarningHtml = "";
+    let displayBooks;
 
     if (keyword) {
-      // search: GET /api/v1/books/search?keyword=...
       const searchResult = await fetchJSON(
         `/api/v1/books/search?keyword=${encodeURIComponent(keyword)}`
       );
       booksJson = searchResult.results || [];
+      if (searchResult.googleBooksAvailable === false) {
+        externalWarningHtml = `
+          <div class="empty-state search-warning">
+            <h3>Showing BookShare matches only</h3>
+            <p>Google Books is unavailable right now, so external search results could not be loaded.</p>
+          </div>
+        `;
+      }
     } else {
-      // no keyword → list all books
       booksJson = await fetchJSON("/api/v1/books");
     }
 
     if (!Array.isArray(booksJson) || booksJson.length === 0) {
       resultsDiv.innerHTML = `
+        ${externalWarningHtml}
         <div class="empty-state">
           <h3>${keyword ? "No books matched that search" : "No books in the library yet"}</h3>
           <p>${keyword ? "Try a different title or author." : "Add the first title to start the shared library."}</p>
@@ -59,81 +176,32 @@ async function searchBooks() {
       return;
     }
 
-    const booksHtml = booksJson
-    .map((book) => {
-        const title = book.title || "(Untitled)";
+    if (!keyword && getLibraryMode() === "discover") {
+      displayBooks = booksJson.slice(0, DISCOVER_PREVIEW_COUNT);
+    } else {
+      displayBooks = booksJson;
+    }
 
-        const author = book.authorName || "";
-        const authorHtml = author
-        ? `<div class="book-author">${escapeHTML(author)}</div>`
-        : `<div class="book-author text-muted">Author unknown</div>`;
+    const booksHtml = displayBooks.map(renderBookCard).join("\n");
+    const loadMoreHtml = !keyword
+      ? renderLoadMoreLink(booksJson.length, displayBooks.length)
+      : "";
 
-        const yearHtml = book.year
-        ? `<span class="book-year">(${escapeHTML(String(book.year))})</span>`
-        : "";
+    document.getElementById("search_results").innerHTML = `
+      ${externalWarningHtml}
+      ${booksHtml}
+    `;
 
-        const isbnHtml = book.ISBN
-        ? `<div class="book-meta">ISBN: ${escapeHTML(book.ISBN)}</div>`
-        : "";
-
-        const linkHtml = book._id
-        ? `<a href="/book/${encodeURIComponent(
-            book._id
-            )}">View details &amp; reviews →</a>`
-        : "";
-
-        const coverUrl = book.ISBN
-        ? `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(
-            book.ISBN
-            )}-M.jpg`
-        : "/images/no-cover.png";
-
-        const rawPostedBy = book.addedByUser?.username || "unknown";
-
-        const postedByHtml =
-        rawPostedBy === "unknown"
-            ? "unknown"
-            : `<a href="/profile.html">${escapeHTML(rawPostedBy)}</a>`;
-
-        return `
-        <article class="book-card">
-            <img
-            class="book-cover"
-            src="${coverUrl}"
-            alt="Cover of ${escapeHTML(title)}"
-            onerror="this.src='/images/no-cover.png'"
-            >
-            <div class="book-card-body">
-            <h3 class="book-title">
-                ${escapeHTML(title)} ${yearHtml}
-            </h3>
-            ${authorHtml}
-            ${isbnHtml}
-            <div class="book-posted-by">
-                Posted by: ${postedByHtml}
-            </div>
-
-            <div class="book-actions">
-                ${linkHtml}
-                ${
-                book._id
-                    ? `<button class="btn btn-outline-secondary btn-sm" onclick="addToReadingList('${book._id}', this)">
-                        Add to my list
-                    </button>`
-                    : ""
-                }
-            </div>
-            </div>
-        </article>
-        `;
-    })
-    .join("\n");
-
-    document.getElementById("search_results").innerHTML = booksHtml;
+    if (footerDiv) {
+      footerDiv.innerHTML = loadMoreHtml;
+    }
 
   }
   catch (error) {
     console.log("Error searching/loading books:", error);
+    if (footerDiv) {
+      footerDiv.innerHTML = "";
+    }
     resultsDiv.innerHTML = `
       <div class="empty-state">
         <h3>Couldn’t load books</h3>
@@ -213,6 +281,8 @@ async function addBook() {
   const authorNameEl = document.getElementById("add_book_authorName_input");
   const yearEl = document.getElementById("add_book_year_input");
   const isbnEl = document.getElementById("add_book_ISBN_input");
+  const coverUrlEl = document.getElementById("add_book_cover_url_input");
+  const googleIdEl = document.getElementById("add_book_google_id_input");
   const msgEl = document.getElementById("add_book_message");
 
   const title = titleEl.value.trim();
@@ -242,6 +312,8 @@ async function addBook() {
         title,
         authorName,
         year: yearValue ? Number(yearValue) : undefined,
+        coverUrl: coverUrlEl ? coverUrlEl.value.trim() : "",
+        googleBooksId: googleIdEl ? googleIdEl.value.trim() : "",
       },
     });
 
@@ -251,6 +323,12 @@ async function addBook() {
     authorNameEl.value = "";
     yearEl.value = "";
     isbnEl.value = "";
+    if (coverUrlEl) {
+      coverUrlEl.value = "";
+    }
+    if (googleIdEl) {
+      googleIdEl.value = "";
+    }
 
     if (typeof searchBooks === "function") {
       searchBooks();
@@ -273,75 +351,109 @@ async function autofillFromISBN() {
   const titleEl = document.getElementById("add_book_title_input");
   const authorNameEl = document.getElementById("add_book_authorName_input");
   const yearEl = document.getElementById("add_book_year_input");
+  const coverUrlEl = document.getElementById("add_book_cover_url_input");
+  const googleIdEl = document.getElementById("add_book_google_id_input");
+  const msgEl = document.getElementById("add_book_message");
 
   const isbn = isbnEl ? isbnEl.value.trim() : "";
   if (!isbn) return;
 
   try {
-    // 1) Get book metadata from OpenLibrary
-    const url = `https://openlibrary.org/isbn/${isbn}.json`;
-    const resp = await fetch(url);
-
-    if (!resp.ok) {
-      console.log("No metadata found for ISBN", isbn);
-      return;
+    if (msgEl) {
+      msgEl.innerText = "Looking up book details...";
     }
 
-    const data = await resp.json();
+    const result = await fetchJSON(
+      `/api/v1/books/autofill?isbn=${encodeURIComponent(isbn)}`
+    );
+    const data = result.book || {};
 
-    // --- Title ---
-    if (data.title && titleEl && !titleEl.value) {
-      titleEl.value = data.title;
+    if (titleEl) {
+      titleEl.value = data.title || "";
     }
 
-    // --- Publish year ---
-    if (data.publish_date && yearEl && !yearEl.value) {
-      // publish_date might be "March 12, 2004" or "2004"
-      const yearMatch = data.publish_date.match(/\d{4}/);
-      if (yearMatch) {
-        yearEl.value = yearMatch[0];
-      }
+    if (authorNameEl) {
+      authorNameEl.value = data.authorName || "";
     }
 
-    // --- Author full name ---
-    // data.authors is usually like [{ key: "/authors/OL12345A" }, ...]
-    if (data.authors && data.authors.length > 0 && authorNameEl && !authorNameEl.value) {
-      const authorKey = data.authors[0].key; // e.g. "/authors/OL12345A"
-      const authorResp = await fetch(`https://openlibrary.org${authorKey}.json`);
-      if (authorResp.ok) {
-        const authorData = await authorResp.json();
-        if (authorData && authorData.name) {
-          // authorData.name is usually full name already (e.g. "Jane Austen")
-          authorNameEl.value = authorData.name;
-        }
-      }
+    if (yearEl) {
+      yearEl.value = data.year ? String(data.year) : "";
     }
 
+    if (coverUrlEl) {
+      coverUrlEl.value = data.coverUrl || "";
+    }
+
+    if (googleIdEl) {
+      googleIdEl.value = data.googleBooksId || "";
+    }
+
+    if (msgEl) {
+      msgEl.innerText = data.title
+        ? "Book details loaded from Google Books."
+        : "";
+    }
   } catch (err) {
     console.log("Error autofilling from ISBN:", err);
+    if (msgEl) {
+      msgEl.innerText = "No Google Books match found for that ISBN.";
+    }
   }
 }
 
 async function addToReadingList(bookId, btn) {
+  const actionsEl = btn ? btn.closest(".book-actions") : null;
+  let msgEl = actionsEl ? actionsEl.querySelector(".signin-inline-message") : null;
+
+  if (!msgEl && actionsEl) {
+    msgEl = document.createElement("div");
+    msgEl.className = "message-line signin-inline-message";
+    actionsEl.appendChild(msgEl);
+  }
+
+  if (!window.myIdentity) {
+    showInlineSignInPrompt(
+      msgEl,
+      "Please sign in to save this book to your reading list.",
+    );
+    return;
+  }
+
   try {
-    // call API
+    if (msgEl) {
+      msgEl.textContent = "Adding...";
+    }
+
     const result = await fetchJSON("/api/v1/users/readingList", {
       method: "POST",
       body: { bookId }
     });
 
     if (result.status === "success") {
-      // Change button UI
       btn.innerText = "Added to list ✓";
       btn.disabled = true;
       btn.classList.add("added");
+      if (msgEl) {
+        msgEl.textContent = "";
+      }
 
       console.log("Book added to list");
     }
   }
   catch (err) {
     console.error("Error adding to list:", err);
-    alert("Unable to add to your reading list. Please try again.");
+    const message = String(err.message || err);
+    if (message.includes("Status: 401") || message.includes('"not logged in"')) {
+      showInlineSignInPrompt(
+        msgEl,
+        "Please sign in to save this book to your reading list.",
+      );
+      return;
+    }
+
+    if (msgEl) {
+      msgEl.textContent = "Unable to add to your reading list. Please try again.";
+    }
   }
 }
 

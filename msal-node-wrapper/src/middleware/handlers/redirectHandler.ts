@@ -14,13 +14,15 @@ function redirectHandler(this: WebAppAuthProvider): RequestHandler {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         this.getLogger().trace("redirectHandler called");
 
-        if (!req.body || !req.body.code) {
+        const payload = req.method === "GET" ? req.query : req.body;
+
+        if (!payload || !payload.code) {
             return next(new Error(ErrorMessages.AUTH_CODE_RESPONSE_NOT_FOUND));
         }
 
         const tokenRequest = {
             ...req.session.tokenRequestParams,
-            code: req.body.code as string
+            code: payload.code as string
         } as AuthorizationCodeRequest;
 
         try {
@@ -32,7 +34,7 @@ function redirectHandler(this: WebAppAuthProvider): RequestHandler {
 
             const tokenResponse = await msalInstance.acquireTokenByCode(
                 tokenRequest,
-                req.body as AuthorizationCodePayload
+                payload as AuthorizationCodePayload
             );
 
             req.session.tokenCache = msalInstance.getTokenCache().serialize();
@@ -40,9 +42,9 @@ function redirectHandler(this: WebAppAuthProvider): RequestHandler {
             req.session.account = tokenResponse.account!; // account will never be null in this grant type
             req.session.isAuthenticated = true;
 
-            const { redirectTo } = req.body.state ?
+            const { redirectTo } = payload.state ?
                 StringUtils.jsonParseHelper(
-                    this.getCryptoProvider().base64Decode(req.body.state as string)
+                    this.getCryptoProvider().base64Decode(payload.state as string)
                 ) as AppState
                 :
                 { redirectTo: "/" };

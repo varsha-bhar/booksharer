@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -12,6 +13,25 @@ const requireLogin = (req, res, next) => {
     }
     next();
 };
+
+async function findOwnedFriendList(FriendList, ownerId, listRef) {
+    const baseQuery = { friendListOwnerId: ownerId };
+
+    if (mongoose.Types.ObjectId.isValid(listRef)) {
+        const byId = await FriendList.findOne({
+            ...baseQuery,
+            _id: listRef
+        });
+        if (byId) {
+            return byId;
+        }
+    }
+
+    return FriendList.findOne({
+        ...baseQuery,
+        friendListName: listRef
+    });
+}
 
 // POST /api/v1/friends/:listname - Create or update a friend list
 router.post("/:listname", requireLogin, async (req, res) => {
@@ -55,7 +75,8 @@ router.post("/:listname", requireLogin, async (req, res) => {
             friendListName: listname,
             friendListDesc: description || "",
             listPrivacyInfo: "private",
-            listMembers: members || []
+            listMembers: members || [],
+            sharedBooks: []
         });
 
         await newList.save();
@@ -81,7 +102,7 @@ router.post("/:listname", requireLogin, async (req, res) => {
     }
 });
 
-// GET /api/v1/friends/:listname - Get members of a friend list
+// GET /api/v1/friends/:listname - Get members and books of a friend list
 router.get("/:listname", requireLogin, async (req, res) => {
     try {
         const { listname } = req.params;
@@ -97,12 +118,17 @@ router.get("/:listname", requireLogin, async (req, res) => {
         }
 
         // Find the friend list
-        const friendList = await FriendList.findOne({
-            friendListOwnerId: currentUser._id,
-            friendListName: listname
-        }).populate('listMembers', 'username displayName');
+        const friendList = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
 
-        if (!friendList) {
+        const populatedFriendList = await FriendList.findById(friendList?._id)
+            .populate('listMembers', 'username displayName')
+            .populate('sharedBooks', 'title authorName year ISBN coverUrl');
+
+        if (!populatedFriendList) {
             return res.status(404).json({
                 status: "error",
                 error: "Friend list not found"
@@ -112,10 +138,12 @@ router.get("/:listname", requireLogin, async (req, res) => {
         return res.json({
             status: "success",
             friendList: {
-                name: friendList.friendListName,
-                description: friendList.friendListDesc,
-                members: friendList.listMembers,
-                memberCount: friendList.listMembers.length
+                id: populatedFriendList._id,
+                name: populatedFriendList.friendListName,
+                description: populatedFriendList.friendListDesc,
+                members: populatedFriendList.listMembers,
+                memberCount: populatedFriendList.listMembers.length,
+                sharedBooks: populatedFriendList.sharedBooks || [],
             }
         });
 
@@ -151,6 +179,7 @@ router.get("/", requireLogin, async (req, res) => {
                 name: list.friendListName,
                 description: list.friendListDesc,
                 memberCount: list.listMembers.length,
+                sharedBookCount: (list.sharedBooks || []).length,
                 id: list._id
             }))
         });
@@ -160,6 +189,117 @@ router.get("/", requireLogin, async (req, res) => {
         return res.status(500).json({
             status: "error",
             error: "Server error retrieving friend lists"
+        });
+    }
+});
+
+// POST /api/v1/friends/:listname/books - Add a book to a friend list
+router.post("/:listname/books", requireLogin, async (req, res) => {
+    try {
+        const { listname } = req.params;
+        const { bookId } = req.body || {};
+
+        if (!bookId) {
+            return res.status(400).json({
+                status: "error",
+                error: "bookId is required"
+            });
+        }
+
+        const FriendList = req.models.FriendList;
+        const User = req.models.User;
+        const Book = req.models.Book;
+
+        const username = req.session.account.username;
+        const currentUser = await User.findOne({ username });
+        if (!currentUser) {
+            return res.status(404).json({ status: "error", error: "user not found" });
+        }
+
+        const friendList = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
+
+        if (!friendList) {
+            return res.status(404).json({
+                status: "error",
+                error: "Friend list not found"
+            });
+        }
+
+        const book = await Book.findById(bookId);
+        if (!book) {
+            return res.status(404).json({
+                status: "error",
+                error: "Book not found"
+            });
+        }
+
+        const alreadyShared = (friendList.sharedBooks || []).some(
+            (id) => id.toString() === String(book._id)
+        );
+
+        if (!alreadyShared) {
+            friendList.sharedBooks.push(book._id);
+            await friendList.save();
+        }
+
+        return res.json({
+            status: "success",
+            message: "Book added to friend list"
+        });
+    } catch (error) {
+        console.error("Add book to friend list error:", error);
+        return res.status(500).json({
+            status: "error",
+            error: "Server error adding book to friend list"
+        });
+    }
+});
+
+// DELETE /api/v1/friends/:listname/books/:bookId - Remove a book from a friend list
+router.delete("/:listname/books/:bookId", requireLogin, async (req, res) => {
+    try {
+        const { listname, bookId } = req.params;
+
+        const FriendList = req.models.FriendList;
+        const User = req.models.User;
+
+        const username = req.session.account.username;
+        const currentUser = await User.findOne({ username });
+        if (!currentUser) {
+            return res.status(404).json({ status: "error", error: "user not found" });
+        }
+
+        const friendList = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
+
+        if (!friendList) {
+            return res.status(404).json({
+                status: "error",
+                error: "Friend list not found"
+            });
+        }
+
+        friendList.sharedBooks = (friendList.sharedBooks || []).filter(
+            (id) => id.toString() !== bookId
+        );
+        await friendList.save();
+
+        return res.json({
+            status: "success",
+            message: "Book removed from friend list"
+        });
+    } catch (error) {
+        console.error("Remove book from friend list error:", error);
+        return res.status(500).json({
+            status: "error",
+            error: "Server error removing book from friend list"
         });
     }
 });
@@ -190,10 +330,11 @@ router.post("/:listname/members", requireLogin, async (req, res) => {
         }
 
         // Find friend list
-        const friendList = await FriendList.findOne({
-            friendListOwnerId: currentUser._id,
-            friendListName: listname
-        });
+        const friendList = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
 
         if (!friendList) {
             return res.status(404).json({
@@ -244,10 +385,11 @@ router.delete("/:listname/members/:userId", requireLogin, async (req, res) => {
             return res.status(404).json({ status: "error", error: "user not found" });
         }
 
-        const friendList = await FriendList.findOne({
-            friendListOwnerId: currentUser._id,
-            friendListName: listname
-        });
+        const friendList = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
 
         if (!friendList) {
             return res.status(404).json({
@@ -291,22 +433,25 @@ router.delete("/:listname", requireLogin, async (req, res) => {
             return res.status(404).json({ status: "error", error: "user not found" });
         }
 
-        const friendList = await FriendList.findOneAndDelete({
-            friendListOwnerId: currentUser._id,
-            friendListName: listname
-        });
+        const friendListToDelete = await findOwnedFriendList(
+            FriendList,
+            currentUser._id,
+            listname
+        );
 
-        if (!friendList) {
+        if (!friendListToDelete) {
             return res.status(404).json({
                 status: "error",
                 error: "Friend list not found"
             });
         }
 
+        await FriendList.findByIdAndDelete(friendListToDelete._id);
+
         // Remove from user's friendLists array
         await User.findByIdAndUpdate(
             currentUser._id,
-            { $pull: { friendLists: friendList._id } }
+            { $pull: { friendLists: friendListToDelete._id } }
         );
 
         return res.json({

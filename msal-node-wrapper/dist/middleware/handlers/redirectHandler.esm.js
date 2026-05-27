@@ -10,25 +10,26 @@ import { StringUtils } from '../../node_modules/@azure/msal-common/dist/utils/St
 function redirectHandler() {
     return async (req, res, next) => {
         this.getLogger().trace("redirectHandler called");
-        if (!req.body || !req.body.code) {
+        const payload = req.method === "GET" ? req.query : req.body;
+        if (!payload || !payload.code) {
             return next(new Error(ErrorMessages.AUTH_CODE_RESPONSE_NOT_FOUND));
         }
         const tokenRequest = {
             ...req.session.tokenRequestParams,
-            code: req.body.code
+            code: payload.code
         };
         try {
             const msalInstance = this.getMsalClient();
             if (req.session.tokenCache) {
                 msalInstance.getTokenCache().deserialize(req.session.tokenCache);
             }
-            const tokenResponse = await msalInstance.acquireTokenByCode(tokenRequest, req.body);
+            const tokenResponse = await msalInstance.acquireTokenByCode(tokenRequest, payload);
             req.session.tokenCache = msalInstance.getTokenCache().serialize();
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             req.session.account = tokenResponse.account; // account will never be null in this grant type
             req.session.isAuthenticated = true;
-            const { redirectTo } = req.body.state ?
-                StringUtils.jsonParseHelper(this.getCryptoProvider().base64Decode(req.body.state))
+            const { redirectTo } = payload.state ?
+                StringUtils.jsonParseHelper(this.getCryptoProvider().base64Decode(payload.state))
                 :
                     { redirectTo: "/" };
             res.redirect(redirectTo);

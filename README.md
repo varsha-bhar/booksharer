@@ -5,6 +5,10 @@ Chris Hunter, Kevin Chuang, Arkita Jain, Varsha Bharath
 Client secrets are setup for Azure auth in a `.env` file in the root of the project. We have provided an `EXAMPLE.env` file to show what secrets to add to enable the project
 to run on a local installation. (standard values from Azure auth class exercises should work here, if running at http://localhost:3000)
 
+For Google Books-powered search/autofill, also add:
+
+`GOOGLE_BOOKS_API_KEY=your_google_books_api_key`
+
 ## Introduction
 Our group is going to create a social network site for sharing information about books with select audiences. Book data will be public but users will be able to set their own limits on who sees their reading lists, comments, or reviews. Users will be able to share books and tag others who might be interested in a specific book.
 

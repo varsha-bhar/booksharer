@@ -30,7 +30,7 @@ function loginHandler(
                 req.protocol,
                 req.get("host") || req.hostname
             ),
-            responseMode: ResponseMode.FORM_POST,
+            responseMode: ResponseMode.QUERY,
             scopes: options.scopes || [],
             prompt: options.prompt || undefined,
             claims: options.claims || undefined,

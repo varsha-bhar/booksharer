@@ -22,6 +22,7 @@ models.User= mongoose.model("User", userSchema);
 
 const bookSchema = new mongoose.Schema({
     ISBN: String,
+    googleBooksId: String,
     title: String,
     authorName: String,
     authorFirstName: String,
@@ -30,6 +31,8 @@ const bookSchema = new mongoose.Schema({
     year: Number,
     publisher: String,
     edition: String,
+    coverUrl: String,
+    source: String,
     noteList: [{ type: mongoose.Schema.Types.ObjectId, ref: "NoteEntry" }],
     addedByUser: {type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
@@ -64,6 +67,7 @@ const friendListSchema = new mongoose.Schema({
     friendListDesc: String,
     listPrivacyInfo: String,
     listMembers: [{type: mongoose.Schema.Types.ObjectId, ref:"User"}],
+    sharedBooks: [{type: mongoose.Schema.Types.ObjectId, ref:"Book"}],
 });
 models.FriendList = mongoose.model("FriendList", friendListSchema);
 

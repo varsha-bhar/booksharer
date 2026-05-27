@@ -28,6 +28,7 @@
 
           <div class="nav-links">
             <a href="/" class="nav-link-pill">Discover</a>
+            <a href="/groups.html" id="groups_nav_link" class="nav-link-pill nav-link-signed-in-only">Groups</a>
             <a href="/profile.html" class="nav-link-pill">My Profile</a>
           </div>
 
@@ -68,6 +69,40 @@
                   Add to my reading list
                 </button>
                 <span id="book_add_message" class="message-line"></span>
+              </div>
+
+              <div class="detail-divider"></div>
+
+              <div class="form-section">
+                <div class="section-head">
+                  <div>
+                    <span class="badge-soft">Share To Group</span>
+                    <h2 class="section-title mt-3">Add this book to a friend list</h2>
+                    <p class="section-subtitle">Share this title with one of your saved groups so the recommendation stays organized.</p>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="field-group">
+                    <label class="field-label" for="friend_list_select">Friend list</label>
+                    <select id="friend_list_select" class="form-control">
+                      <option value="">Choose a friend list</option>
+                    </select>
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label" for="share_book_button">&nbsp;</label>
+                    <button
+                      id="share_book_button"
+                      class="btn btn-primary"
+                      onclick="shareBookToFriendList()"
+                    >
+                      Add to group
+                    </button>
+                  </div>
+                </div>
+
+                <div id="share_book_message" class="message-line"></div>
               </div>
             </div>
           </div>
