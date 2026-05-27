@@ -5,9 +5,6 @@ import logger from 'morgan';
 import sessions from 'express-session';
 import WebAppAuthProvider from 'msal-node-wrapper';
 import dotenv from 'dotenv';
-
-import models from './models.js'
-
 import { fileURLToPath } from 'url';
 import reviewRoutes from "./routes/api/v1/reviews.js";
 import booksRoutes from "./routes/api/v1/books.js";
@@ -15,6 +12,22 @@ import usersRouter from './routes/api/v1/users.js';
 import friendsRoutes from "./routes/api/v1/friends.js";
 
 dotenv.config();
+
+const { default: models } = await import("./models.js");
+const requiredEnvVars = [
+    "CLIENT_ID",
+    "AUTHORITY",
+    "CLIENT_SECRET",
+    "REDIRECT_URI",
+    "SESSION_SECRET",
+    "MONGODB_URI"
+];
+
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+if (missingEnvVars.length > 0) {
+    throw new Error(`Missing required environment variables: ${missingEnvVars.join(", ")}`);
+}
+
 const authConfig = {
     auth: {
         clientId: process.env.CLIENT_ID,
@@ -50,7 +63,12 @@ app.use(
     sessions({
         secret: process.env.SESSION_SECRET,
         saveUninitialized: true,
-        cookie: { maxAge: oneDay },
+        cookie: {
+            maxAge: oneDay,
+            httpOnly: true,
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production"
+        },
         resave: false
     })
 );
@@ -61,6 +79,10 @@ app.use(authProvider.authenticate());
 // Pretty URL for book pages
 app.get("/book/:id", (req, res) => {
     res.sendFile(path.join(process.cwd(), "public", "book.html"));
+});
+
+app.get("/healthz", (req, res) => {
+    res.status(200).json({ status: "ok" });
 });
 
 app.use((req, res, next) => {

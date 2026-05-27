@@ -9,6 +9,40 @@ For Google Books-powered search/autofill, also add:
 
 `GOOGLE_BOOKS_API_KEY=your_google_books_api_key`
 
+You also need:
+
+`MONGODB_URI=your_mongodb_connection_string`
+
+## Deploying to Render
+This app is ready to deploy as a Render web service from GitHub.
+
+### Required Render environment variables
+- `CLIENT_ID`
+- `AUTHORITY`
+- `CLIENT_SECRET`
+- `REDIRECT_URI`
+- `SESSION_SECRET`
+- `GOOGLE_BOOKS_API_KEY`
+- `MONGODB_URI`
+
+`REDIRECT_URI` should stay `/redirect`.
+
+### Azure setup for production
+In your Microsoft Entra / Azure app registration, add your deployed Render callback URL as a redirect URI:
+
+`https://<your-render-service>.onrender.com/redirect`
+
+That full deployed URL must match the public URL Render gives your service.
+
+### Render setup
+1. Push this repo to GitHub.
+2. In Render, create a new Web Service from the repo.
+3. Render can use the included `render.yaml`, or you can set:
+   - Build command: `npm install`
+   - Start command: `npm start`
+4. Add the required environment variables in the Render dashboard.
+5. Deploy and visit `/healthz` to confirm the app is up.
+
 ## Introduction
 Our group is going to create a social network site for sharing information about books with select audiences. Book data will be public but users will be able to set their own limits on who sees their reading lists, comments, or reviews. Users will be able to share books and tag others who might be interested in a specific book.
 

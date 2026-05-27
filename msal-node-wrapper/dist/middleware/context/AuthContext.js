@@ -1,11 +1,11 @@
-/*! msal-node-wrapper v1.0.0-beta 2024-02-02 */
+/*! msal-node-wrapper v1.0.0-beta 2026-05-27 */
 'use strict';
 'use strict';
 
 var loginHandler = require('../handlers/loginHandler.js');
 var logoutHandler = require('../handlers/logoutHandler.js');
 var acquireTokenHandler = require('../handlers/acquireTokenHandler.js');
-var TimeUtils = require('../../node_modules/@azure/msal-common/dist/utils/TimeUtils.js');
+var TimeUtils = require('@azure/msal-common');
 
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.

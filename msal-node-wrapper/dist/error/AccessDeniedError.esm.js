@@ -1,4 +1,4 @@
-/*! msal-node-wrapper v1.0.0-beta 2024-02-02 */
+/*! msal-node-wrapper v1.0.0-beta 2026-05-27 */
 'use strict';
 import { AuthError } from '@azure/msal-node';
 

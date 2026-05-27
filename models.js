@@ -2,12 +2,15 @@ import mongoose from 'mongoose'
 
 // models will have my db collection connections
 const models = {}
+const mongoUri = process.env.MONGODB_URI;
+
+if (!mongoUri) {
+    throw new Error("MONGODB_URI is required");
+}
 
 console.log("connecting to mongodb");
 
-await mongoose.connect(
-  "mongodb+srv://bookItemsUser:6aa6fe87152a88cec285c073f36842d6@cluster0.tit8bph.mongodb.net/bookItems?retryWrites=true&w=majority&appName=Cluster0"
-);
+await mongoose.connect(mongoUri);
 
 console.log("successfully connected to mongodb!");
 const userSchema = new mongoose.Schema({

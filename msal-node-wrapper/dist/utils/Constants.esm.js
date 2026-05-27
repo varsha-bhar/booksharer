@@ -1,4 +1,4 @@
-/*! msal-node-wrapper v1.0.0-beta 2024-02-02 */
+/*! msal-node-wrapper v1.0.0-beta 2026-05-27 */
 'use strict';
 import { OIDC_DEFAULT_SCOPES } from '../node_modules/@azure/msal-common/dist/utils/Constants.esm.js';
 import { LogLevel } from '../node_modules/@azure/msal-common/dist/logger/Logger.esm.js';
